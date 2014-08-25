@@ -1,10 +1,7 @@
-QT = core gui widgets
+TEMPLATE = subdirs
 
-TARGET = telemetry
-TEMPLATE = app
-
-
-SOURCES += main.cpp\
-        mainwindow.cpp
-
-HEADERS += mainwindow.h
+SUBDIRS += src
+exists(qtserialport){
+    SUBDIRS += qtserialport
+    src.depends += qtserialport
+}

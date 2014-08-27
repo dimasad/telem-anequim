@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS += src
+SUBDIRS += src tests
 exists(qtserialport){
     SUBDIRS += qtserialport
     src.depends += qtserialport

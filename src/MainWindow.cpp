@@ -1,5 +1,5 @@
-#include "MainWindow.h"
-#include "TelemetryStream.h"
+#include "MainWindow.hpp"
+#include "TelemetryStream.hpp"
 
 #include <QtGui>
 

@@ -1,10 +1,10 @@
 #ifndef TELEMETRYSTREAM_H
 #define TELEMETRYSTREAM_H
 
-
+#include <QtSerialPort/QSerialPort>
 #include <QList>
 #include <QTime>
-#include <QtSerialPort/QSerialPort>
+#include <QTextStream>
 
 
 class TelemetryVariable {
@@ -13,6 +13,7 @@ public:
 		      double value) : 
 	label(label), units(units), value(value)
     {}
+    operator QString() const;
     
     QString label, units;
     double value;
@@ -29,9 +30,9 @@ class EmsStream : public QObject
 public:
     EmsStream(const QString & portName);
     
-    QSerialPort port;
-
 private:
+    QSerialPort port;
+    
     TelemetryMessage parseMessage(const QByteArray & body);
     double parseDouble(int & cursor, unsigned len, const QByteArray & body);
 
@@ -40,6 +41,21 @@ public slots:
 
 signals:
     void variableUpdated(const TelemetryVariable & var);
+};
+
+
+class TelemetryDump : public QObject
+{
+    Q_OBJECT
+
+public:
+    TelemetryDump();
+
+private:
+    QTextStream stream;
+    
+public slots:
+    void printVariable(const TelemetryVariable & var);
 };
 
 

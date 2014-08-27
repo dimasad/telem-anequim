@@ -1,4 +1,4 @@
-#include "EmsDump.hpp"
+#include "TelemetryStream.hpp"
 
 #include <QtCore>
 #include <QCoreApplication>
@@ -20,8 +20,14 @@ int main(int argc, char *argv[])
         standardOutput << msg.arg(argumentList.first()) << endl;
         return 1;
     }
+    QString portName = argumentList.at(1);
     
+    EmsStream stream(portName);
+    TelemetryDump dump;
+    QObject::connect(&stream, 
+		     SIGNAL(variableUpdated(const TelemetryVariable &)), 
+		     &dump, 
+		     SLOT(printVariable(const TelemetryVariable &)));
     
-
     return coreApplication.exec();
 }

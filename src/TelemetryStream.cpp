@@ -1,17 +1,26 @@
 #include "TelemetryStream.hpp"
+
 #include <cmath>
-#include <QLocale>
+#include <QDebug>
 
 #define MSG_BODY_SIZE 119
 #define MSG_FOOTER_SIZE 2
 #define MSG_TOTAL_SIZE (MSG_BODY_SIZE + MSG_FOOTER_SIZE)
 
 
+TelemetryVariable::operator QString() const
+{
+    return QString("%1 = %2 %3").arg(label).arg(value).arg(units);
+}
+
+
 EmsStream::EmsStream(const QString & portName) : 
     port(portName)
 {
+    port.setBaudRate(QSerialPort::Baud115200);
     port.setReadBufferSize(MSG_TOTAL_SIZE);
     connect(&port, SIGNAL(readyRead()), this, SLOT(triggerRead()));
+    port.open(QIODevice::ReadOnly);
 }
 
 
@@ -29,15 +38,19 @@ EmsStream::triggerRead()
     else if (line.size() > MSG_BODY_SIZE)
 	line = line.left(MSG_BODY_SIZE);
 
-    //Evaluate the checksum
-    quint16 checksum = 0;
-    for (int i = 0; i < MSG_BODY_SIZE; i++)
+    //Extract the checksum
+    quint8 checksum = line.right(2).toInt(NULL, 16);
+    line.chop(2);
+    
+    //Check the message
+    for (int i = 0; i < line.size(); i++)
 	checksum += line[i];
     if (checksum != 0)
 	return;
-
+    
     TelemetryMessage msg = parseMessage(line);
-    //emit messageReceived(msg);
+    for (TelemetryMessage::iterator i = msg.begin(); i != msg.end(); i++)
+	emit variableUpdated(*i);
 }
 
 
@@ -122,4 +135,17 @@ EmsStream::parseDouble(int & cursor, unsigned len, const QByteArray & body)
 
     cursor += len;
     return value;
+}
+
+
+TelemetryDump::TelemetryDump() :
+    stream(stdout)
+{
+}
+
+
+void
+TelemetryDump::printVariable(const TelemetryVariable & var)
+{
+    stream << QString(var) << endl;
 }

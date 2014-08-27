@@ -1,11 +1,13 @@
 QT += core
 greaterThan(QT_MAJOR_VERSION, 4): QT += serialport
 
+INCLUDEPATH += ../../src
+
 TARGET = emsdump
 TEMPLATE = app
 
-SOURCES += main.cpp EmsDump.cpp ../../src/TelemetryStream.cpp
-HEADERS += EmsDump.hpp ../../src/TelemetryStream.hpp
+SOURCES += main.cpp ../../src/TelemetryStream.cpp
+HEADERS += ../../src/TelemetryStream.hpp
 
 exists(../../qtserialport) {
     QTSERIALPORT_BUILD_ROOT = ../../qtserialport

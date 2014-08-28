@@ -59,6 +59,8 @@ EmsStream::parseMessage(const QByteArray & body)
 {
     TelemetryMessage msg;
     int cursor = 0;
+
+    QString fahrenheit = QString::fromUtf8("\u00B0F");
     
     msg.append(
         TelemetryVariable("hour", "h", parseDouble(cursor, 2, body))
@@ -81,7 +83,7 @@ EmsStream::parseMessage(const QByteArray & body)
     );
     msg.append(
         TelemetryVariable(
-            "oil temperature", "\uC2B0F", parseDouble(cursor, 3, body)
+            "oil temperature", fahrenheit, parseDouble(cursor, 3, body)
         )
     );
     msg.append(
@@ -119,6 +121,58 @@ EmsStream::parseMessage(const QByteArray & body)
             "fuel level 2", "gal", parseDouble(cursor, 3, body) / 10
         )
     );
+
+    // Skip general purpose variables
+    cursor += 3 * 8;
+
+    msg.append(
+        TelemetryVariable(
+            "general purpose thermocouple", fahrenheit,
+	    parseDouble(cursor, 4, body)
+        )
+    );
+    msg.append(
+        TelemetryVariable("egt1", fahrenheit, parseDouble(cursor, 4, body))
+    );
+    msg.append(
+        TelemetryVariable("egt2", fahrenheit, parseDouble(cursor, 4, body))
+    );
+    msg.append(
+        TelemetryVariable("egt3", fahrenheit, parseDouble(cursor, 4, body))
+    );
+    msg.append(
+        TelemetryVariable("egt4", fahrenheit, parseDouble(cursor, 4, body))
+    );
+    msg.append(
+        TelemetryVariable("egt5", fahrenheit, parseDouble(cursor, 4, body))
+    );
+    msg.append(
+        TelemetryVariable("egt6", fahrenheit, parseDouble(cursor, 4, body))
+    );
+    msg.append(
+        TelemetryVariable("cht1", fahrenheit, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("cht2", fahrenheit, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("cht3", fahrenheit, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("cht4", fahrenheit, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("cht5", fahrenheit, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("cht6", fahrenheit, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("contact 1", "", parseDouble(cursor, 1, body))
+    );
+    msg.append(
+        TelemetryVariable("contact 2", "", parseDouble(cursor, 1, body))
+    );
     
     return msg;
 }
@@ -147,5 +201,5 @@ TelemetryDump::TelemetryDump() :
 void
 TelemetryDump::printVariable(const TelemetryVariable & var)
 {
-    stream << QString(var) << endl;
+    stream << (QString) var << endl;
 }

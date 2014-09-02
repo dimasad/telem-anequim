@@ -23,24 +23,45 @@ public:
 typedef QList<TelemetryVariable> TelemetryMessage;
 
     
-class EmsStream : public QObject
+class TelemetryStream : public QObject
 {
     Q_OBJECT
     
 public:
-    EmsStream(const QString & portName);
+    TelemetryStream(const QString & portName, int message_body_size);
     
-private:
+protected:
     QSerialPort port;
-    
-    TelemetryMessage parseMessage(const QByteArray & body);
+    int message_body_size, total_message_size;
     double parseDouble(int & cursor, unsigned len, const QByteArray & body);
+    long parseHex(int & cursor, unsigned len, const QByteArray & body);
+    virtual TelemetryMessage parseMessage(const QByteArray & body) = 0;
 
 public slots:
     void triggerRead();
 
 signals:
     void variableUpdated(const TelemetryVariable & var);
+};
+
+
+class EmsStream : public TelemetryStream
+{
+    Q_OBJECT
+    
+public:
+    EmsStream(const QString & portName);
+    virtual TelemetryMessage parseMessage(const QByteArray & body);
+};
+
+
+class EfisStream : public TelemetryStream
+{
+    Q_OBJECT
+    
+public:
+    EfisStream(const QString & portName);
+    virtual TelemetryMessage parseMessage(const QByteArray & body);
 };
 
 
@@ -51,7 +72,7 @@ class TelemetryDump : public QObject
 public:
     TelemetryDump();
 
-private:
+protected:
     QTextStream stream;
     
 public slots:

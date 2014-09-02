@@ -3,9 +3,10 @@
 #include <cmath>
 #include <QDebug>
 
-#define MSG_BODY_SIZE 119
-#define MSG_FOOTER_SIZE 2
-#define MSG_TOTAL_SIZE (MSG_BODY_SIZE + MSG_FOOTER_SIZE)
+
+#define EMS_MESSAGE_BODY_SIZE 119
+#define EFIS_MESSAGE_BODY_SIZE 51
+#define MESSAGE_FOOTER_SIZE 2
 
 
 TelemetryVariable::operator QString() const
@@ -14,18 +15,21 @@ TelemetryVariable::operator QString() const
 }
 
 
-EmsStream::EmsStream(const QString & portName) : 
-    port(portName)
+TelemetryStream::TelemetryStream(const QString & portName,
+                                 int message_body_size) :
+    port(portName), message_body_size(message_body_size)
 {
-    port.setBaudRate(QSerialPort::Baud115200);
-    port.setReadBufferSize(MSG_TOTAL_SIZE);
+    total_message_size = message_body_size + MESSAGE_FOOTER_SIZE;
+    
     connect(&port, SIGNAL(readyRead()), this, SLOT(triggerRead()));
     port.open(QIODevice::ReadOnly);
+    port.setBaudRate(QSerialPort::Baud115200);
+    port.setReadBufferSize(total_message_size);
 }
 
 
 void
-EmsStream::triggerRead()
+TelemetryStream::triggerRead()
 {
     //Check if the message end marker (CR + LF) has been reached
     if (!port.canReadLine())
@@ -33,11 +37,13 @@ EmsStream::triggerRead()
     
     //Get the message body
     QByteArray line = port.readLine();
-    if (line.size() < MSG_BODY_SIZE)
+    if (line.endsWith("\r\n"))
+        line.chop(2);
+    if (line.size() < message_body_size)
 	return;
-    else if (line.size() > MSG_BODY_SIZE)
-	line = line.left(MSG_BODY_SIZE);
-
+    else if (line.size() > message_body_size)
+	line = line.right(message_body_size);
+    
     //Extract the checksum
     quint8 checksum = line.right(2).toInt(NULL, 16);
     line.chop(2);
@@ -51,6 +57,37 @@ EmsStream::triggerRead()
     TelemetryMessage msg = parseMessage(line);
     for (TelemetryMessage::iterator i = msg.begin(); i != msg.end(); i++)
 	emit variableUpdated(*i);
+}
+
+
+double
+TelemetryStream::parseDouble(int & cursor, unsigned len,
+                             const QByteArray & body)
+{
+
+    bool ok;
+    double value = body.mid(cursor, len).toDouble(&ok);
+    if (!ok)
+	value = NAN;
+
+    cursor += len;
+    return value;
+}
+
+
+long
+TelemetryStream::parseHex(int & cursor, unsigned len, const QByteArray & body)
+{
+
+    long value = body.mid(cursor, len).toInt(NULL, 16);
+    cursor += len;
+    return value;
+}
+
+
+EmsStream::EmsStream(const QString & portName) :
+    TelemetryStream(portName, EMS_MESSAGE_BODY_SIZE)
+{
 }
 
 
@@ -178,17 +215,86 @@ EmsStream::parseMessage(const QByteArray & body)
 }
 
 
-double 
-EmsStream::parseDouble(int & cursor, unsigned len, const QByteArray & body)
+EfisStream::EfisStream(const QString & portName) :
+    TelemetryStream(portName, EFIS_MESSAGE_BODY_SIZE)
 {
-    
-    bool ok;
-    double value = body.mid(cursor, len).toDouble(&ok);
-    if (!ok)
-	value = NAN;
+}
 
-    cursor += len;
-    return value;
+
+TelemetryMessage
+EfisStream::parseMessage(const QByteArray & body)
+{
+    TelemetryMessage msg;
+    int cursor = 0;
+
+    QString degrees = QString::fromUtf8("\u00B0");
+    QString degrees_per_second = QString::fromUtf8("\u00B0/s");
+    
+    msg.append(
+        TelemetryVariable("hour", "h", parseDouble(cursor, 2, body))
+    );
+    msg.append(
+        TelemetryVariable("minute", "min", parseDouble(cursor, 2, body))
+    );
+    msg.append(
+        TelemetryVariable("second", "s", parseDouble(cursor, 2, body))
+    );
+    msg.append(
+        TelemetryVariable(
+            "millisecond", "ms", parseDouble(cursor, 2, body) / 64
+        )
+    );
+    msg.append(
+        TelemetryVariable("pitch", degrees, parseDouble(cursor, 4, body) / 10)
+    );
+    msg.append(
+        TelemetryVariable("roll", degrees, parseDouble(cursor, 5, body) / 10)
+    );
+    msg.append(
+        TelemetryVariable("yaw", degrees, parseDouble(cursor, 3, body))
+    );
+    msg.append(
+        TelemetryVariable("airspeed", "m/s", parseDouble(cursor, 4, body) / 10)
+    );
+
+    double altitude_alternating = parseDouble(cursor, 4, body);
+    double vsi_alternating = parseDouble(cursor, 4, body) / 10;
+
+    msg.append(
+        TelemetryVariable(
+            "lateral acceleration", "g", parseDouble(cursor, 3, body) / 100
+        )
+    );
+    msg.append(
+        TelemetryVariable(
+            "vertical acceleration", "g", parseDouble(cursor, 3, body) / 10
+        )
+    );
+    msg.append(
+        TelemetryVariable(
+            "angle of attack", "% of stall", parseDouble(cursor, 2, body)
+        )
+    );
+
+    int status_bitmask = parseHex(cursor, 6, body);
+    if (status_bitmask & 1) {
+        msg.append(
+            TelemetryVariable("pressure altitude", "m", altitude_alternating)
+        );
+        msg.append(
+            TelemetryVariable("turn rate", degrees_per_second, vsi_alternating)
+        );
+    } else {
+        msg.append(
+            TelemetryVariable("displayed altitude", "m", altitude_alternating)
+        );
+        msg.append(
+            TelemetryVariable("vertical speed", "ft/s", vsi_alternating)
+        );
+    }
+
+    
+    return msg;
 }
 
 

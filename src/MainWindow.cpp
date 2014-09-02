@@ -2,6 +2,8 @@
 #include "TelemetryStream.hpp"
 
 #include <QtGui>
+#include <QLabel>
+#include <QVBoxLayout>
 
 
 MainWindow::MainWindow(QWidget *parent) :

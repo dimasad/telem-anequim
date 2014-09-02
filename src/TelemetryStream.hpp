@@ -9,10 +9,10 @@
 
 class TelemetryVariable {
 public:
+    TelemetryVariable() {}
     TelemetryVariable(const QString & label, const QString & units, 
 		      double value) : 
-	label(label), units(units), value(value)
-    {}
+	label(label), units(units), value(value) {}
     operator QString() const;
     
     QString label, units;
@@ -52,6 +52,8 @@ class EmsStream : public TelemetryStream
     
 public:
     EmsStream(const QString & portName);
+    bool parseGeneralPurpose(int & cursor, const QByteArray & body, 
+                             TelemetryVariable & var);
     virtual bool messageValid(quint8 checksum, const QByteArray & payload);
     virtual TelemetryMessage parseMessage(const QByteArray & body);
 };

@@ -9,6 +9,11 @@
 #define MESSAGE_FOOTER_SIZE 2
 
 
+static const QString fahrenheit = QString::fromUtf8("\u00B0F");
+static const QString degrees = QString::fromUtf8("\u00B0");
+static const QString degrees_per_second = QString::fromUtf8("\u00B0/s");
+
+
 TelemetryVariable::operator QString() const
 {
     return QString("%1 = %2 %3").arg(label).arg(value).arg(units);
@@ -90,12 +95,70 @@ EmsStream::EmsStream(const QString & portName) :
 
 
 bool
+EmsStream::parseGeneralPurpose(int & cursor, const QByteArray & body, 
+                               TelemetryVariable & var)
+{
+    QByteArray label = body.mid(cursor, 3);
+    cursor += 3;
+    
+    double value = parseDouble(cursor, 5, body);
+    if (label == "OAT") {
+        var.label = "OAT";
+        var.value = value;
+        var.units = fahrenheit;
+    } else if (label == "CRB") {
+        var.label = "carburator temperature";
+        var.value = value;
+        var.units = fahrenheit;
+    } else if (label == "CLT") {
+        var.label = "coolant temperature";
+        var.value = value;
+        var.units = fahrenheit;
+    } else if (label == "CLP") {
+        var.label = "coolant pressure";
+        var.value = value;
+        var.units = "psi";
+    } else if (label == "FL3") {
+        var.label = "fuel level 3";
+        var.value = value / 10;
+        var.units = "gal";
+    } else if (label == "FL4") {
+        var.label = "fuel level 4";
+        var.value = value / 10;
+        var.units = "gal";
+    } else if (label == "CHT") {
+        var.label = "cylinder head temperature";
+        var.value = value;
+        var.units = fahrenheit;
+    } else if (label == "TRA") {
+        var.label = "aileron trim";
+        var.value = value;
+        var.units = "%";
+    } else if (label == "TRE") {
+        var.label = "elevator trim";
+        var.value = value;
+        var.units = "%";
+    } else if (label == "TRR") {
+        var.label = "rudder trim";
+        var.value = value;
+        var.units = "%";
+    } else if (label == "FLP") {
+        var.label = "flap position";
+        var.value = value;
+        var.units = degrees;
+    } else {
+        return false;
+    }
+    
+    return true;
+}
+
+bool
 EmsStream::messageValid(quint8 checksum, const QByteArray & payload)
 {
-    quint8 sum = 0;
     for (int i = 0; i < payload.size(); i++)
-        sum += payload[i];    
-    return checksum + sum == 0;
+        checksum += payload[i];
+    return checksum == 0;
 }
 
 
@@ -104,8 +167,6 @@ EmsStream::parseMessage(const QByteArray & body)
 {
     TelemetryMessage msg;
     int cursor = 0;
-
-    QString fahrenheit = QString::fromUtf8("\u00B0F");
     
     msg.append(
         TelemetryVariable("hour", "h", parseDouble(cursor, 2, body))
@@ -167,9 +228,12 @@ EmsStream::parseMessage(const QByteArray & body)
         )
     );
 
-    // Skip general purpose variables
-    cursor += 3 * 8;
-
+    for (int i = 0; i < 3; i++) {
+        TelemetryVariable gp;
+        if (parseGeneralPurpose(cursor, body, gp))
+            msg.append(gp);
+    }
+    
     msg.append(
         TelemetryVariable(
             "general purpose thermocouple", fahrenheit,
@@ -245,9 +309,6 @@ EfisStream::parseMessage(const QByteArray & body)
 {
     TelemetryMessage msg;
     int cursor = 0;
-
-    QString degrees = QString::fromUtf8("\u00B0");
-    QString degrees_per_second = QString::fromUtf8("\u00B0/s");
     
     msg.append(
         TelemetryVariable("hour", "h", parseDouble(cursor, 2, body))
@@ -294,7 +355,7 @@ EfisStream::parseMessage(const QByteArray & body)
             "angle of attack", "% of stall", parseDouble(cursor, 2, body)
         )
     );
-
+    
     int status_bitmask = parseHex(cursor, 6, body);
     if (status_bitmask & 1) {
         msg.append(

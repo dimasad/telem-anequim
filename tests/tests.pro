@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 
-SUBDIRS += emsdump
+SUBDIRS += telemetrydump

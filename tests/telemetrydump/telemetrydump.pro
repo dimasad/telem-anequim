@@ -3,7 +3,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += serialport
 
 INCLUDEPATH += ../../src
 
-TARGET = emsdump
+TARGET = telemetrydump
 TEMPLATE = app
 
 SOURCES += main.cpp ../../src/TelemetryStream.cpp

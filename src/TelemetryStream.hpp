@@ -35,6 +35,7 @@ protected:
     int message_body_size, total_message_size;
     double parseDouble(int & cursor, unsigned len, const QByteArray & body);
     long parseHex(int & cursor, unsigned len, const QByteArray & body);
+    virtual bool messageValid(quint8 checksum, const QByteArray & payload) = 0;
     virtual TelemetryMessage parseMessage(const QByteArray & body) = 0;
 
 public slots:
@@ -51,6 +52,7 @@ class EmsStream : public TelemetryStream
     
 public:
     EmsStream(const QString & portName);
+    virtual bool messageValid(quint8 checksum, const QByteArray & payload);
     virtual TelemetryMessage parseMessage(const QByteArray & body);
 };
 
@@ -61,6 +63,7 @@ class EfisStream : public TelemetryStream
     
 public:
     EfisStream(const QString & portName);
+    virtual bool messageValid(quint8 checksum, const QByteArray & payload);
     virtual TelemetryMessage parseMessage(const QByteArray & body);
 };
 

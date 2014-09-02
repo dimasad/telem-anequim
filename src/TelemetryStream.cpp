@@ -49,9 +49,7 @@ TelemetryStream::triggerRead()
     line.chop(2);
     
     //Check the message
-    for (int i = 0; i < line.size(); i++)
-	checksum += line[i];
-    if (checksum != 0)
+    if (!messageValid(checksum, line))
 	return;
     
     TelemetryMessage msg = parseMessage(line);
@@ -88,6 +86,16 @@ TelemetryStream::parseHex(int & cursor, unsigned len, const QByteArray & body)
 EmsStream::EmsStream(const QString & portName) :
     TelemetryStream(portName, EMS_MESSAGE_BODY_SIZE)
 {
+}
+
+
+bool
+EmsStream::messageValid(quint8 checksum, const QByteArray & payload)
+{
+    quint8 sum = 0;
+    for (int i = 0; i < payload.size(); i++)
+        sum += payload[i];    
+    return checksum + sum == 0;
 }
 
 
@@ -221,6 +229,17 @@ EfisStream::EfisStream(const QString & portName) :
 }
 
 
+bool
+EfisStream::messageValid(quint8 checksum, const QByteArray & payload)
+{
+    quint8 sum = 0;
+    for (int i = 0; i < payload.size(); i++)
+        sum += payload[i];
+    
+    return checksum == sum;
+}
+
+
 TelemetryMessage
 EfisStream::parseMessage(const QByteArray & body)
 {
@@ -257,7 +276,7 @@ EfisStream::parseMessage(const QByteArray & body)
         TelemetryVariable("airspeed", "m/s", parseDouble(cursor, 4, body) / 10)
     );
 
-    double altitude_alternating = parseDouble(cursor, 4, body);
+    double altitude_alternating = parseDouble(cursor, 5, body);
     double vsi_alternating = parseDouble(cursor, 4, body) / 10;
 
     msg.append(
@@ -292,7 +311,6 @@ EfisStream::parseMessage(const QByteArray & body)
             TelemetryVariable("vertical speed", "ft/s", vsi_alternating)
         );
     }
-
     
     return msg;
 }

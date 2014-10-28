@@ -1,7 +1,27 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
+
+#include "Gauge.hpp"
+#include "TelemetryStream.hpp"
+
 
 #include <QMainWindow>
+#include <QMap>
+
+
+class GaugeUpdater : public QObject
+{
+    Q_OBJECT
+    
+public slots:
+    void update(const TelemetryVariable &var);
+
+public:
+    void link(const QString &label, Gauge *gauge);
+    
+private:
+    QMap<QString, Gauge*> m_gauges;
+};
 
 class MainWindow : public QMainWindow
 {
@@ -11,6 +31,7 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = 0);
     
  private:
+    GaugeUpdater m_updater;
 };
 
-#endif // MAINWINDOW_H
+#endif // MAINWINDOW_HPP

@@ -1,5 +1,5 @@
-#ifndef TELEMETRYSTREAM_H
-#define TELEMETRYSTREAM_H
+#ifndef TELEMETRYSTREAM_HPP
+#define TELEMETRYSTREAM_HPP
 
 #include <QtSerialPort/QSerialPort>
 #include <QList>
@@ -7,7 +7,8 @@
 #include <QTextStream>
 
 
-class TelemetryVariable {
+class TelemetryVariable 
+{
 public:
     TelemetryVariable() {}
     TelemetryVariable(const QString & label, const QString & units, 
@@ -85,4 +86,4 @@ public slots:
 };
 
 
-#endif // TELEMETRYSTREAM_H
+#endif // TELEMETRYSTREAM_HPP

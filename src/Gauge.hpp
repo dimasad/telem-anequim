@@ -1,17 +1,26 @@
 #ifndef GAUGE_HPP
+#define GAUGE_HPP
 
 #include <QGraphicsSvgItem>
 #include <QGraphicsView>
 #include <QSharedPointer>
 #include <QSvgRenderer>
 
+/* TODO:
+ * - Make AngularGauge and LinearGauge.
+ * - Make rangeBands in Gauges.
+ * - Make minor ticks.
+ * - Make loading of Gauges from JSON.
+ * - Fix Gauge background
+ * - Fix Gauge widget scaling and minimum and preferred widths and heights.
+ */
 
 class Gauge : public QGraphicsView
 {
     Q_OBJECT
     
 public:
-    Gauge(QWidget *parent = 0);
+    Gauge(QWidget *parent=0);
     void setValueLimits(double min, double max);
     void setAngleLimits(double min, double max);
     

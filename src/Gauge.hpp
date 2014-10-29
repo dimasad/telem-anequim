@@ -10,10 +10,13 @@
  * - Make AngularGauge and LinearGauge.
  * - Make rangeBands in Gauges.
  * - Make minor ticks.
- * - Make loading of Gauges from JSON.
+ * - Make loading of gauges from JSON.
+ * - Add labels to gauges.
+ * - Add digital display of value.
  * - Fix Gauge background
  * - Fix Gauge widget scaling and minimum and preferred widths and heights.
  */
+
 
 class Gauge : public QGraphicsView
 {
@@ -22,23 +25,19 @@ class Gauge : public QGraphicsView
 public:
     Gauge(QWidget *parent=0);
     void setValueLimits(double min, double max);
-    void setAngleLimits(double min, double max);
-    
+    virtual void setNumMajorTicks(unsigned numMajorTicks) = 0;
+    unsigned numMajorTicks() {return m_numMajorTicks;}
+                                               
 public slots:
-    void setValue(double value);
-    
+    virtual void setValue(double value) = 0;
+
 protected:
-    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
-                          qreal zValue);
-    
-private:
     enum GraphicLayers {
         BackgroundLayer, InfoLayer, NeedleLayer, ForegroundLayer
     };
     
-    double m_valueMin = 0, m_valueMax = 100, m_angleMin = 20, m_angleMax = 340;
-    unsigned m_numMajorTicks = 5;
-    QPointF m_pivot;
+    double m_valueMin = 0, m_valueMax = 100;
+    unsigned m_numMajorTicks;
     QSvgRenderer m_renderer;
     QGraphicsSvgItem m_background;
     QGraphicsSvgItem m_needle;
@@ -46,8 +45,32 @@ private:
     QList<QGraphicsSvgItem *> m_majorTicks;
     QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
     
+    virtual void initializeFromId(QGraphicsSvgItem *element,
+                                  const QString &elementId, qreal zValue);
+};
+
+
+class AngularGauge : public Gauge
+{
+    Q_OBJECT
+    
+public:
+    AngularGauge(QWidget *parent=0);
+    void setAngleLimits(double min, double max);
+    virtual void setNumMajorTicks(unsigned numMajorTicks);
+    
+public slots:
+    virtual void setValue(double value);
+    
+protected:
+    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                          qreal zValue);
+    
+private:    
+    double m_angleMin = 20, m_angleMax = 340;    
+    QPointF m_pivot;
+    
     double valueToAngle(double value);
-    void setupMajorTicks();
 };
 
 #endif // GAUGE_HPP

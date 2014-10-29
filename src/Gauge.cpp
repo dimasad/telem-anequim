@@ -12,24 +12,25 @@ typedef enum {AnchorTop, AnchorBottom, AnchorLeft, AnchorRight} AnchorPoint;
 
 static void anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
                        const QPointF &position);
-static void setHeight(QGraphicsItem *item, qreal height);
 
 
 Gauge::Gauge(QWidget *parent)
     : QGraphicsView(parent)
 {
+    setScene(new QGraphicsScene(this));
+    setStyleSheet("background: transparent");
+}
     
-    QGraphicsScene *scene = new QGraphicsScene(this);
-    setScene(scene);
+void
+Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                        qreal zValue)
+{
+    element->setSharedRenderer(&m_renderer);
+    element->setElementId(elementId);
+    element->setPos(m_renderer.boundsOnElement(elementId).topLeft());
+    element->setZValue(zValue);
     
-    m_renderer.load(QString(":/images/gauge.svg"));
-    m_pivot = m_renderer.boundsOnElement("pivot").center();
-
-    initializeFromId(&m_background, "background", BackgroundLayer);
-    initializeFromId(&m_needle, "needle", NeedleLayer);
-    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
-    
-    setupMajorTicks();
+    scene()->addItem(element);
 }
 
 void
@@ -39,34 +40,42 @@ Gauge::setValueLimits(double min, double max)
     m_valueMin = min;
 }
 
+AngularGauge::AngularGauge(QWidget *parent)
+    : Gauge(parent)
+{    
+    m_renderer.load(QString(":/images/gauge.svg"));
+    m_pivot = m_renderer.boundsOnElement("pivot").center();
+    
+    initializeFromId(&m_background, "background", BackgroundLayer);
+    initializeFromId(&m_needle, "needle", NeedleLayer);
+    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
+    
+    setNumMajorTicks(6);
+}
+
 void
-Gauge::setAngleLimits(double min, double max)
+AngularGauge::setAngleLimits(double min, double max)
 {
     m_angleMax = max;
     m_angleMin = min;
 }
 
 void
-Gauge::setValue(double value)
+AngularGauge::setValue(double value)
 {
     m_needle.setRotation(valueToAngle(value));
 }
 
 void
-Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
-                        qreal zValue)
+AngularGauge::initializeFromId(QGraphicsSvgItem *element,
+                               const QString &elementId, qreal zValue)
 {
-    element->setSharedRenderer(&m_renderer);
-    element->setElementId(elementId);
-    element->setPos(m_renderer.boundsOnElement(elementId).topLeft());
+    Gauge::initializeFromId(element, elementId, zValue);
     element->setTransformOriginPoint(element->mapFromScene(m_pivot));
-    element->setZValue(zValue);
-
-    scene()->addItem(element);
 }
 
 double
-Gauge::valueToAngle(double value)
+AngularGauge::valueToAngle(double value)
 {
     if (value < m_valueMin)
         return m_angleMin;
@@ -81,9 +90,10 @@ Gauge::valueToAngle(double value)
 }
 
 void
-Gauge::setupMajorTicks()
+AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
 {
-
+    m_numMajorTicks = numMajorTicks;
+    
     //Clear any existing old ticks
     while (!m_majorTicks.isEmpty()) {
         delete m_majorTicks.first();
@@ -161,9 +171,4 @@ static void anchorItem(QGraphicsItem *item, AnchorPoint anchor,
         item->setY(mappedPosition.y() - sceneBoundingRect.height() / 2);
         break;
     }
-}
-
-static void setHeight(QGraphicsItem *item, qreal height)
-{
-    item->setScale(height / item->boundingRect().height());
 }

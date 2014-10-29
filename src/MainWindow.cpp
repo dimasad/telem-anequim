@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     QLabel *label = new QLabel("0.0");
-    Gauge *gauge = new Gauge;
+    Gauge *gauge = new AngularGauge;
     gauge->setValue(20);
     m_updater.link("coolant temperature", gauge);
     

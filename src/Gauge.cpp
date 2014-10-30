@@ -5,13 +5,18 @@
 #include <QLocale>
 #include <QDebug>
 
+#include <algorithm>
 #include <cmath>
 
-typedef enum {AnchorTop, AnchorBottom, AnchorLeft, AnchorRight} AnchorPoint;
+typedef enum {
+    AnchorTop, AnchorBottom, AnchorLeft, AnchorRight,
+    AnchorTopLeft, AnchorTopRight
+} AnchorPoint;
 
-
+static QPointF bottomCenter(const QRectF &rect);
 static void anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
                        const QPointF &position);
+
 
 
 Gauge::Gauge(QWidget *parent)
@@ -24,7 +29,7 @@ Gauge::Gauge(QWidget *parent)
     m_valueLabel.setZValue(InfoLayer);
 }
 
-    
+
 void
 Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
                         qreal zValue)
@@ -35,8 +40,6 @@ Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
     element->setZValue(zValue);
     
     scene()->addItem(element);
-
-    qDebug() << elementId << m_renderer.boundsOnElement(elementId).topLeft();
 }
 
 
@@ -64,6 +67,19 @@ Gauge::setValueLabelPos(double xPos, double yPos)
 {
     m_valueLabel.setPos(xPos, yPos);
     scene()->addItem(&m_valueLabel);
+}
+
+
+void
+Gauge::clearTicks()
+{
+    for (auto majorTick : m_majorTicks)
+        delete majorTick;
+    for (auto majorTickLabel : m_majorTickLabels)
+        delete majorTickLabel;
+    
+    m_majorTicks.clear();
+    m_majorTickLabels.clear();
 }
 
 
@@ -124,17 +140,10 @@ void
 AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
 {
     m_numMajorTicks = numMajorTicks;
+    clearTicks();
     
-    //Clear any existing old ticks
-    while (!m_majorTicks.isEmpty()) {
-        delete m_majorTicks.first();
-        m_majorTicks.removeFirst();
-    }
-    
-    if (m_numMajorTicks < 2)
-        return;
-    
-    double valueIncrement = (m_valueMax - m_valueMin) / (m_numMajorTicks - 1);
+    double valueRange = m_valueMax - m_valueMin;
+    double valueIncrement = valueRange / std::max(m_numMajorTicks - 1, 1u);
     for (unsigned i = 0; i < m_numMajorTicks; i++) {
         double value = m_valueMin + i * valueIncrement;
         double angle = valueToAngle(value);
@@ -180,8 +189,83 @@ AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
 }
 
 
-static void anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
-                       const QPointF &scenePosition)
+LinearGauge::LinearGauge(QWidget *parent)
+    : Gauge(parent)
+{    
+    m_renderer.load(QString(":/images/linear-gauge.svg"));
+    m_startPos = m_renderer.boundsOnElement("firstTick").center().x();
+    m_endPos = m_renderer.boundsOnElement("lastTick").center().x();
+    m_cursorWidth = m_renderer.boundsOnElement("needle").width();
+    m_tickWidth = m_renderer.boundsOnElement("firstTick").width();
+    
+    initializeFromId(&m_background, "background", BackgroundLayer);
+    initializeFromId(&m_needle, "needle", NeedleLayer);
+}
+
+void
+LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
+{
+    m_numMajorTicks = numMajorTicks;
+    clearTicks();
+    
+    double valueRange = m_valueMax - m_valueMin;
+    double valueIncrement = valueRange / std::max(m_numMajorTicks - 1, 1u);
+    for (unsigned i = 0; i < m_numMajorTicks; i++) {
+        double value = m_valueMin + i * valueIncrement;
+        double pos = valueToPos(value);
+        
+        QGraphicsSvgItem *tick = new QGraphicsSvgItem;
+        initializeFromId(tick, "firstTick", InfoLayer);
+        tick->setX(pos - m_tickWidth / 2);
+        m_majorTicks.append(tick);
+        
+        QGraphicsSimpleTextItem *tickLabel = new QGraphicsSimpleTextItem();
+        tickLabel->setText(QLocale().toString(value));
+        tickLabel->setBrush(QColor("white"));
+        tickLabel->setZValue(InfoLayer);
+        scene()->addItem(tickLabel);
+        m_majorTickLabels.append(tickLabel);
+
+        if (i == 0) {
+            QPointF anchorPoint = tick->sceneBoundingRect().bottomLeft();
+            anchorItem(tickLabel, AnchorTopLeft, anchorPoint);
+        } else if (i == m_numMajorTicks - 1) {
+            QPointF anchorPoint = tick->sceneBoundingRect().bottomRight();
+            anchorItem(tickLabel, AnchorTopRight, anchorPoint);
+        } else {
+            QPointF anchorPoint = bottomCenter(tick->sceneBoundingRect());
+            anchorItem(tickLabel, AnchorTop, anchorPoint);
+        }
+
+    }
+}
+
+
+void
+LinearGauge::setValue(double value)
+{
+    m_needle.setX(valueToPos(value) - m_cursorWidth / 2);
+}
+
+
+double
+LinearGauge::valueToPos(double value)
+{
+
+    if (value < m_valueMin)
+        return m_startPos;
+    
+    if (value > m_valueMax)
+        return m_endPos;
+
+    double normalizedValue = (value - m_valueMin) / (m_valueMax - m_valueMin);
+    return normalizedValue * (m_endPos - m_startPos) + m_startPos;
+}
+
+
+static void
+anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
+           const QPointF &scenePosition)
 {
     QPointF mappedPosition = item->mapFromScene(scenePosition);
     QRectF sceneBoundingRect = item->sceneBoundingRect();
@@ -203,34 +287,20 @@ static void anchorItem(QGraphicsItem *item, AnchorPoint anchor,
         item->setX(mappedPosition.x() - sceneBoundingRect.width());
         item->setY(mappedPosition.y() - sceneBoundingRect.height() / 2);
         break;
+    case AnchorTopLeft:
+        item->setX(mappedPosition.x());
+        item->setY(mappedPosition.y());
+        break;
+    case AnchorTopRight:
+        item->setX(mappedPosition.x() - sceneBoundingRect.width());
+        item->setY(mappedPosition.y());
+        break;
     }
 }
 
 
-LinearGauge::LinearGauge(QWidget *parent)
-    : Gauge(parent)
-{    
-    m_renderer.load(QString(":/images/linear-gauge.svg"));
-    //m_pivot = m_renderer.boundsOnElement("pivot").center();
-    
-    initializeFromId(&m_background, "background", BackgroundLayer);
-    initializeFromId(&m_needle, "needle", NeedleLayer);
-}
-
-void
-LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
+static QPointF
+bottomCenter(const QRectF &rect)
 {
-}
-
-
-void
-LinearGauge::setValue(double value)
-{
-}
-
-
-double
-LinearGauge::valueToX(double value)
-{
-    return 0;
+    return QPointF(rect.center().x(), rect.bottom());
 }

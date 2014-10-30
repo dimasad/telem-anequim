@@ -29,6 +29,7 @@ public:
     unsigned numMajorTicks() {return m_numMajorTicks;}
     void addLabel(const QString &text, double xPos, double yPos);
     void setValueLabelPos(double xPos, double yPos);
+    void clearTicks();
 
 public slots:
     virtual void setValue(double value) = 0;
@@ -66,13 +67,11 @@ public slots:
     virtual void setValue(double value);
     
 protected:
-    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
-                          qreal zValue);
-    
-private:    
     double m_angleMin = -135, m_angleMax = 90;
     QPointF m_pivot;
     
+    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                          qreal zValue);    
     double valueToAngle(double value);
 };
 
@@ -87,10 +86,11 @@ public:
 public slots:
     virtual void setValue(double value);
     
-private:    
+protected:    
     double m_angleMin = -135, m_angleMax = 90;
+    double m_startPos, m_endPos, m_cursorWidth, m_tickWidth;
     
-    double valueToX(double value);
+    double valueToPos(double value);
 };
 
 #endif // GAUGE_HPP

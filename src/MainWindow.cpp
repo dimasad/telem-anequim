@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     LinearGauge *linearGauge = new LinearGauge;
     linearGauge->setNumMajorTicks(6);
-    linearGauge->setValue(20);
+    linearGauge->setValue(25);
     m_updater.link("coolant temperature", linearGauge);
     
     QVBoxLayout *layout = new QVBoxLayout;

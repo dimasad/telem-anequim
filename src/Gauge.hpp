@@ -27,7 +27,9 @@ public:
     void setValueLimits(double min, double max);
     virtual void setNumMajorTicks(unsigned numMajorTicks) = 0;
     unsigned numMajorTicks() {return m_numMajorTicks;}
-                                               
+    void addLabel(const QString &text, double xPos, double yPos);
+    void setValueLabelPos(double xPos, double yPos);
+
 public slots:
     virtual void setValue(double value) = 0;
 
@@ -44,6 +46,7 @@ protected:
     QGraphicsSvgItem m_foreground;
     QList<QGraphicsSvgItem *> m_majorTicks;
     QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
+    QGraphicsSimpleTextItem m_valueLabel;
     
     virtual void initializeFromId(QGraphicsSvgItem *element,
                                   const QString &elementId, qreal zValue);
@@ -67,7 +70,7 @@ protected:
                           qreal zValue);
     
 private:    
-    double m_angleMin = 20, m_angleMax = 340;    
+    double m_angleMin = -135, m_angleMax = 90;
     QPointF m_pivot;
     
     double valueToAngle(double value);

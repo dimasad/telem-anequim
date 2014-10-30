@@ -19,7 +19,11 @@ Gauge::Gauge(QWidget *parent)
 {
     setScene(new QGraphicsScene(this));
     setStyleSheet("background: transparent");
+
+    m_valueLabel.setBrush(QColor("white"));
+    m_valueLabel.setZValue(InfoLayer);
 }
+
     
 void
 Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
@@ -33,12 +37,33 @@ Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
     scene()->addItem(element);
 }
 
+
 void
 Gauge::setValueLimits(double min, double max)
 {
     m_valueMax = max;
     m_valueMin = min;
 }
+
+
+void
+Gauge::addLabel(const QString &text, double xPos, double yPos)
+{
+    QGraphicsSimpleTextItem *label = new QGraphicsSimpleTextItem(text);
+    label->setPos(xPos, yPos);
+    label->setBrush(QColor("white"));
+    label->setZValue(InfoLayer);
+    scene()->addItem(label);
+}
+
+
+void
+Gauge::setValueLabelPos(double xPos, double yPos)
+{
+    m_valueLabel.setPos(xPos, yPos);
+    scene()->addItem(&m_valueLabel);
+}
+
 
 AngularGauge::AngularGauge(QWidget *parent)
     : Gauge(parent)
@@ -48,10 +73,9 @@ AngularGauge::AngularGauge(QWidget *parent)
     
     initializeFromId(&m_background, "background", BackgroundLayer);
     initializeFromId(&m_needle, "needle", NeedleLayer);
-    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
-    
-    setNumMajorTicks(6);
+    initializeFromId(&m_foreground, "foreground", ForegroundLayer);    
 }
+
 
 void
 AngularGauge::setAngleLimits(double min, double max)
@@ -60,11 +84,14 @@ AngularGauge::setAngleLimits(double min, double max)
     m_angleMin = min;
 }
 
+
 void
 AngularGauge::setValue(double value)
 {
     m_needle.setRotation(valueToAngle(value));
+    m_valueLabel.setText(QLocale().toString(value));
 }
+
 
 void
 AngularGauge::initializeFromId(QGraphicsSvgItem *element,
@@ -73,6 +100,7 @@ AngularGauge::initializeFromId(QGraphicsSvgItem *element,
     Gauge::initializeFromId(element, elementId, zValue);
     element->setTransformOriginPoint(element->mapFromScene(m_pivot));
 }
+
 
 double
 AngularGauge::valueToAngle(double value)
@@ -88,6 +116,7 @@ AngularGauge::valueToAngle(double value)
     
     return remainder(angle, 360);
 }
+
 
 void
 AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
@@ -116,6 +145,7 @@ AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
         QGraphicsSimpleTextItem *tickLabel = new QGraphicsSimpleTextItem();
         tickLabel->setText(QLocale().toString(value));
         tickLabel->setBrush(QColor("white"));
+        tickLabel->setZValue(InfoLayer);
         scene()->addItem(tickLabel);        
         m_majorTickLabels.append(tickLabel);
 
@@ -146,6 +176,7 @@ AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
         }
     }
 }
+
 
 static void anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
                        const QPointF &scenePosition)

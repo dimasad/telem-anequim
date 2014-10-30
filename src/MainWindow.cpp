@@ -22,13 +22,14 @@ GaugeUpdater::link(const QString &label, Gauge *gauge)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    QLabel *label = new QLabel("0.0");
     Gauge *gauge = new AngularGauge;
+    gauge->setNumMajorTicks(6);
     gauge->setValue(20);
+    gauge->addLabel(u8"Temperature (\u00B0F)", 120, 200);
+    gauge->setValueLabelPos(120, 220);    
     m_updater.link("coolant temperature", gauge);
     
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(label);
     layout->addWidget(gauge);
     
     QWidget *centralWidget = new QWidget;

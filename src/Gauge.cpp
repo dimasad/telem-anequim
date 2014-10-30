@@ -35,6 +35,8 @@ Gauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
     element->setZValue(zValue);
     
     scene()->addItem(element);
+
+    qDebug() << elementId << m_renderer.boundsOnElement(elementId).topLeft();
 }
 
 
@@ -68,7 +70,7 @@ Gauge::setValueLabelPos(double xPos, double yPos)
 AngularGauge::AngularGauge(QWidget *parent)
     : Gauge(parent)
 {    
-    m_renderer.load(QString(":/images/gauge.svg"));
+    m_renderer.load(QString(":/images/angular-gauge.svg"));
     m_pivot = m_renderer.boundsOnElement("pivot").center();
     
     initializeFromId(&m_background, "background", BackgroundLayer);
@@ -202,4 +204,33 @@ static void anchorItem(QGraphicsItem *item, AnchorPoint anchor,
         item->setY(mappedPosition.y() - sceneBoundingRect.height() / 2);
         break;
     }
+}
+
+
+LinearGauge::LinearGauge(QWidget *parent)
+    : Gauge(parent)
+{    
+    m_renderer.load(QString(":/images/linear-gauge.svg"));
+    //m_pivot = m_renderer.boundsOnElement("pivot").center();
+    
+    initializeFromId(&m_background, "background", BackgroundLayer);
+    initializeFromId(&m_needle, "needle", NeedleLayer);
+}
+
+void
+LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
+{
+}
+
+
+void
+LinearGauge::setValue(double value)
+{
+}
+
+
+double
+LinearGauge::valueToX(double value)
+{
+    return 0;
 }

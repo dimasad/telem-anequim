@@ -48,8 +48,8 @@ protected:
     QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
     QGraphicsSimpleTextItem m_valueLabel;
     
-    virtual void initializeFromId(QGraphicsSvgItem *element,
-                                  const QString &elementId, qreal zValue);
+    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                          qreal zValue);
 };
 
 
@@ -74,6 +74,23 @@ private:
     QPointF m_pivot;
     
     double valueToAngle(double value);
+};
+
+class LinearGauge : public Gauge
+{
+    Q_OBJECT
+    
+public:
+    LinearGauge(QWidget *parent=0);
+    virtual void setNumMajorTicks(unsigned numMajorTicks);
+    
+public slots:
+    virtual void setValue(double value);
+    
+private:    
+    double m_angleMin = -135, m_angleMax = 90;
+    
+    double valueToX(double value);
 };
 
 #endif // GAUGE_HPP

@@ -10,7 +10,7 @@
 
 typedef enum {
     AnchorTop, AnchorBottom, AnchorLeft, AnchorRight,
-    AnchorTopLeft, AnchorTopRight
+    AnchorTopLeft, AnchorTopRight, AnchorBottomLeft, AnchorBottomRight
 } AnchorPoint;
 
 static QPointF bottomCenter(const QRectF &rect);
@@ -189,19 +189,6 @@ AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
 }
 
 
-LinearGauge::LinearGauge(QWidget *parent)
-    : Gauge(parent)
-{    
-    m_renderer.load(QString(":/images/linear-gauge.svg"));
-    m_startPos = m_renderer.boundsOnElement("firstTick").center().x();
-    m_endPos = m_renderer.boundsOnElement("lastTick").center().x();
-    m_cursorWidth = m_renderer.boundsOnElement("needle").width();
-    m_tickWidth = m_renderer.boundsOnElement("firstTick").width();
-    
-    initializeFromId(&m_background, "background", BackgroundLayer);
-    initializeFromId(&m_needle, "needle", NeedleLayer);
-}
-
 void
 LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
 {
@@ -216,7 +203,7 @@ LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
         
         QGraphicsSvgItem *tick = new QGraphicsSvgItem;
         initializeFromId(tick, "firstTick", InfoLayer);
-        tick->setX(pos - m_tickWidth / 2);
+        slideToPos(tick, pos);
         m_majorTicks.append(tick);
         
         QGraphicsSimpleTextItem *tickLabel = new QGraphicsSimpleTextItem();
@@ -226,17 +213,12 @@ LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
         scene()->addItem(tickLabel);
         m_majorTickLabels.append(tickLabel);
 
-        if (i == 0) {
-            QPointF anchorPoint = tick->sceneBoundingRect().bottomLeft();
-            anchorItem(tickLabel, AnchorTopLeft, anchorPoint);
-        } else if (i == m_numMajorTicks - 1) {
-            QPointF anchorPoint = tick->sceneBoundingRect().bottomRight();
-            anchorItem(tickLabel, AnchorTopRight, anchorPoint);
-        } else {
-            QPointF anchorPoint = bottomCenter(tick->sceneBoundingRect());
-            anchorItem(tickLabel, AnchorTop, anchorPoint);
-        }
-
+        if (i == 0)
+            placeFirstTickLabel(tick, tickLabel);
+        else if (i == m_numMajorTicks - 1)
+            placeLastTickLabel(tick, tickLabel);
+        else
+            placeTickLabel(tick, tickLabel);
     }
 }
 
@@ -244,7 +226,7 @@ LinearGauge::setNumMajorTicks(unsigned numMajorTicks)
 void
 LinearGauge::setValue(double value)
 {
-    m_needle.setX(valueToPos(value) - m_cursorWidth / 2);
+    slideToPos(&m_needle, valueToPos(value));
 }
 
 
@@ -259,7 +241,96 @@ LinearGauge::valueToPos(double value)
         return m_endPos;
 
     double normalizedValue = (value - m_valueMin) / (m_valueMax - m_valueMin);
-    return normalizedValue * (m_endPos - m_startPos) + m_startPos;
+    return normalizedValue * std::abs(m_endPos - m_startPos) +
+        std::min(m_startPos, m_endPos);
+}
+
+
+HorizontalLinearGauge::HorizontalLinearGauge(QWidget *parent)
+    : LinearGauge(parent)
+{    
+    m_renderer.load(QString(":/images/linear-horizontal-gauge.svg"));
+    
+    m_startPos = m_renderer.boundsOnElement("firstTick").center().x();
+    m_endPos = m_renderer.boundsOnElement("lastTick").center().x();
+    
+    initializeFromId(&m_background, "background", BackgroundLayer);
+    initializeFromId(&m_needle, "needle", NeedleLayer);
+}
+
+
+void
+HorizontalLinearGauge::slideToPos(QGraphicsItem *item, double pos)
+{
+    item->setX(pos - item->boundingRect().width() / 2);
+}
+
+
+void
+HorizontalLinearGauge::placeFirstTickLabel(QGraphicsItem *tick, 
+                                           QGraphicsItem *label)
+{
+    anchorItem(label, AnchorTopLeft, tick->sceneBoundingRect().bottomLeft());
+}
+
+
+void
+HorizontalLinearGauge::placeTickLabel(QGraphicsItem *tick,
+                                      QGraphicsItem *label)
+{
+    anchorItem(label, AnchorTop, bottomCenter(tick->sceneBoundingRect()));    
+}
+
+
+void
+HorizontalLinearGauge::placeLastTickLabel(QGraphicsItem *tick, 
+                                          QGraphicsItem *label)
+{
+    anchorItem(label, AnchorTopRight, tick->sceneBoundingRect().bottomRight());
+}
+
+
+VerticalLinearGauge::VerticalLinearGauge(QWidget *parent)
+    : LinearGauge(parent)
+{    
+    m_renderer.load(QString(":/images/linear-vertical-gauge.svg"));
+    
+    m_startPos = m_renderer.boundsOnElement("firstTick").center().y();
+    m_endPos = m_renderer.boundsOnElement("lastTick").center().y();
+    
+    initializeFromId(&m_background, "background", BackgroundLayer);
+    initializeFromId(&m_needle, "needle", NeedleLayer);
+}
+
+
+void
+VerticalLinearGauge::slideToPos(QGraphicsItem *item, double pos)
+{
+    item->setY(pos - item->boundingRect().height() / 2);
+}
+
+
+void
+VerticalLinearGauge::placeFirstTickLabel(QGraphicsItem *tick, 
+                                           QGraphicsItem *label)
+{
+    anchorItem(label, AnchorTopRight, tick->sceneBoundingRect().bottomRight());
+}
+
+
+void
+VerticalLinearGauge::placeTickLabel(QGraphicsItem *tick,
+                                      QGraphicsItem *label)
+{
+    anchorItem(label, AnchorTopRight, tick->sceneBoundingRect().bottomRight());
+}
+
+
+void
+VerticalLinearGauge::placeLastTickLabel(QGraphicsItem *tick, 
+                                          QGraphicsItem *label)
+{
+    anchorItem(label, AnchorBottomRight, tick->sceneBoundingRect().topRight());
 }
 
 
@@ -294,6 +365,14 @@ anchorItem(QGraphicsItem *item, AnchorPoint anchor,
     case AnchorTopRight:
         item->setX(mappedPosition.x() - sceneBoundingRect.width());
         item->setY(mappedPosition.y());
+        break;
+    case AnchorBottomLeft:
+        item->setX(mappedPosition.x());
+        item->setY(mappedPosition.y() - sceneBoundingRect.height());
+        break;
+    case AnchorBottomRight:
+        item->setX(mappedPosition.x() - sceneBoundingRect.width());
+        item->setY(mappedPosition.y() - sceneBoundingRect.height());
         break;
     }
 }

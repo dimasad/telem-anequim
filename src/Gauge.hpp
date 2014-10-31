@@ -7,13 +7,9 @@
 #include <QSvgRenderer>
 
 /* TODO:
- * - Make AngularGauge and LinearGauge.
  * - Make rangeBands in Gauges.
  * - Make minor ticks.
  * - Make loading of gauges from JSON.
- * - Add labels to gauges.
- * - Add digital display of value.
- * - Fix Gauge background
  * - Fix Gauge widget scaling and minimum and preferred widths and heights.
  */
 
@@ -75,22 +71,66 @@ protected:
     double valueToAngle(double value);
 };
 
+
 class LinearGauge : public Gauge
 {
     Q_OBJECT
     
 public:
-    LinearGauge(QWidget *parent=0);
+    LinearGauge(QWidget *parent=0) : Gauge(parent) {}
     virtual void setNumMajorTicks(unsigned numMajorTicks);
     
 public slots:
     virtual void setValue(double value);
     
 protected:    
-    double m_angleMin = -135, m_angleMax = 90;
-    double m_startPos, m_endPos, m_cursorWidth, m_tickWidth;
-    
+    double m_startPos, m_endPos;
+
     double valueToPos(double value);
+    virtual void slideToPos(QGraphicsItem *item, double pos) = 0;
+    virtual void placeFirstTickLabel(QGraphicsItem *tick, 
+                                     QGraphicsItem *label) = 0;
+    virtual void placeTickLabel(QGraphicsItem *tick,
+                                QGraphicsItem *label) = 0;
+    virtual void placeLastTickLabel(QGraphicsItem *tick, 
+                                    QGraphicsItem *label) = 0;
 };
+
+
+class HorizontalLinearGauge : public LinearGauge
+{
+    Q_OBJECT
+    
+public:
+    HorizontalLinearGauge(QWidget *parent=0);
+
+protected:
+    virtual void slideToPos(QGraphicsItem *item, double pos);
+    virtual void placeFirstTickLabel(QGraphicsItem *tick, 
+                                     QGraphicsItem *label);
+    virtual void placeTickLabel(QGraphicsItem *tick,
+                                QGraphicsItem *label);
+    virtual void placeLastTickLabel(QGraphicsItem *tick, 
+                                    QGraphicsItem *label);
+};
+
+
+class VerticalLinearGauge : public LinearGauge
+{
+    Q_OBJECT
+    
+public:
+    VerticalLinearGauge(QWidget *parent=0);
+    
+protected:
+    virtual void slideToPos(QGraphicsItem *item, double pos);
+    virtual void placeFirstTickLabel(QGraphicsItem *tick,
+                                     QGraphicsItem *label);
+    virtual void placeTickLabel(QGraphicsItem *tick,
+                                QGraphicsItem *label);
+    virtual void placeLastTickLabel(QGraphicsItem *tick,
+                                    QGraphicsItem *label);
+};
+
 
 #endif // GAUGE_HPP

@@ -29,14 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
     angularGauge->setValueLabelPos(120, 220);    
     m_updater.link("coolant temperature", angularGauge);
 
-    LinearGauge *linearGauge = new LinearGauge;
-    linearGauge->setNumMajorTicks(6);
-    linearGauge->setValue(25);
-    m_updater.link("coolant temperature", linearGauge);
-    
+    HorizontalLinearGauge *horizontalLinearGauge = new HorizontalLinearGauge;
+    horizontalLinearGauge->setNumMajorTicks(6);
+    horizontalLinearGauge->setValue(25);
+    m_updater.link("coolant temperature", horizontalLinearGauge);
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(angularGauge);
-    layout->addWidget(linearGauge);
+    layout->addWidget(horizontalLinearGauge);
     
     QWidget *centralWidget = new QWidget;
     centralWidget->setLayout(layout);

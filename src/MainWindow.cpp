@@ -13,11 +13,33 @@ GaugeUpdater::update(const TelemetryVariable & var)
     }
 }
 
+
 void
 GaugeUpdater::link(const QString &label, Gauge *gauge)
 {
     m_gauges.insert(label, gauge);
 }
+
+
+Settings::Settings() :
+    m_storedSettings("CEA", "telem-anequim")
+{
+    m_emsPort = m_storedSettings.value("ems_port").toString();
+    m_efisPort = m_storedSettings.value("efis_port").toString();
+}
+
+
+void
+Settings::setEmsPort(const QString &newEmsPort)
+{
+}
+
+
+void
+Settings::setEfisPort(const QString &newEmsPort)
+{
+}
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)

@@ -5,6 +5,8 @@
 #include "TelemetryStream.hpp"
 
 
+#include <QComboBox>
+#include <QDialog>
 #include <QMainWindow>
 #include <QMap>
 #include <QSettings>
@@ -27,14 +29,16 @@ private:
 
 class Settings : public QObject
 {
-    Q_OBJECT;
-    Q_PROPERTY(QString emsPort MEMBER m_emsPort WRITE setEmsPort
+    Q_OBJECT
+    Q_PROPERTY(QString emsPort READ emsPort WRITE setEmsPort
                NOTIFY emsPortChanged)
-    Q_PROPERTY(QString efisPort MEMBER m_efisPort WRITE setEfisPort
+    Q_PROPERTY(QString efisPort READ efisPort WRITE setEfisPort
                NOTIFY efisPortChanged)
 
 public:
     Settings();
+    QString emsPort() const {return m_emsPort;}
+    QString efisPort() const {return m_efisPort;}
     void setEmsPort(const QString &newEmsPort);
     void setEfisPort(const QString &newEmsPort);
 
@@ -42,9 +46,30 @@ signals:
     void emsPortChanged(const QString &newEmsPort);
     void efisPortChanged(const QString &newEfisPort);
 
+public slots:
+    void sync();
+
 private:
     QSettings m_storedSettings;
     QString m_emsPort, m_efisPort;
+};
+
+
+class SettingsDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    SettingsDialog(Settings *settings, QWidget *parent=0);
+
+public slots:
+    void saveSettings();
+
+protected:
+    QComboBox m_emsPortComboBox, m_efisPortComboBox;
+    Settings *m_settings;
+    
+    void setCurrentPort(const QString &portName, QComboBox &comboBox);
 };
 
 
@@ -56,6 +81,7 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = 0);
     
  private:
+    Settings m_settings;
     GaugeUpdater m_updater;
 };
 

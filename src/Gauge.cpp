@@ -24,7 +24,7 @@ Gauge::Gauge(QWidget *parent)
 {
     setScene(new QGraphicsScene(this));
     setStyleSheet("background: transparent");
-
+    
     m_valueLabel.setBrush(QColor("white"));
     m_valueLabel.setZValue(InfoLayer);
 }
@@ -91,7 +91,9 @@ AngularGauge::AngularGauge(QWidget *parent)
     
     initializeFromId(&m_background, "background", BackgroundLayer);
     initializeFromId(&m_needle, "needle", NeedleLayer);
-    initializeFromId(&m_foreground, "foreground", ForegroundLayer);    
+    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
+
+    setSceneRect(m_renderer.viewBoxF());
 }
 
 

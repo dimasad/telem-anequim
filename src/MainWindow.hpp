@@ -92,6 +92,8 @@ public slots:
 private:
     Settings m_settings;
     GaugeUpdater m_updater;
+    EmsStream *m_emsStream;
+    
 };
 
 #endif // MAINWINDOW_HPP

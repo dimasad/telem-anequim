@@ -23,7 +23,7 @@ GaugeUpdater::update(const TelemetryVariable &var)
 void
 GaugeUpdater::link(const QString &label, Gauge *gauge)
 {
-    m_gauges.insert(label, gauge);
+    m_gauges.insertMulti(label, gauge);
 }
 
 
@@ -124,26 +124,51 @@ MainWindow::MainWindow(QWidget *parent) :
     mainToolBar->addAction(showSettings);
     
     AngularGauge *angularGauge = new AngularGauge;
-    angularGauge->setNumMajorTicks(6);
-    angularGauge->setValue(20);
-    angularGauge->addLabel(u8"Temperature (\u00B0F)", 120, 200);
+    angularGauge->setValueLimits(0, 200);
+    angularGauge->setNumMajorTicks(5);
+    angularGauge->addLabel(u8"Oil temperature (\u00B0F)", 120, 200);
     angularGauge->setValueLabelPos(120, 220);    
-    m_updater.link("coolant temperature", angularGauge);
+    m_updater.link("oil temperature", angularGauge);
 
-    HorizontalLinearGauge *horizontalLinearGauge = new HorizontalLinearGauge;
-    horizontalLinearGauge->setNumMajorTicks(6);
-    horizontalLinearGauge->setValue(25);
-    m_updater.link("coolant temperature", horizontalLinearGauge);
+    auto *cht1Gauge = new HorizontalLinearGauge;
+    cht1Gauge->setValueLimits(0, 500);
+    cht1Gauge->setNumMajorTicks(6);
+    m_updater.link("cht1", cht1Gauge);
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(angularGauge);
-    layout->addWidget(horizontalLinearGauge);
+    auto *cht2Gauge = new HorizontalLinearGauge;
+    cht2Gauge->setValueLimits(0, 500);
+    cht2Gauge->setNumMajorTicks(6);
+    m_updater.link("cht2", cht2Gauge);
+
+    auto *cht3Gauge = new HorizontalLinearGauge;
+    cht3Gauge->setValueLimits(0, 500);
+    cht3Gauge->setNumMajorTicks(6);
+    m_updater.link("cht3", cht3Gauge);
+
+    auto *cht4Gauge = new HorizontalLinearGauge;
+    cht4Gauge->setValueLimits(0, 500);
+    cht4Gauge->setNumMajorTicks(6);
+    m_updater.link("cht4", cht4Gauge);
+    
+    auto *chtLayout = new QVBoxLayout;
+    chtLayout->addWidget(cht1Gauge);
+    chtLayout->addWidget(cht2Gauge);
+    chtLayout->addWidget(cht3Gauge);
+    chtLayout->addWidget(cht4Gauge);
+    
+    auto *mainLayout = new QHBoxLayout;
+    mainLayout->addWidget(angularGauge);
+    mainLayout->addItem(chtLayout);
     
     QWidget *centralWidget = new QWidget;
-    centralWidget->setLayout(layout);
+    centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
     
     setWindowTitle(tr("Telemetry"));
+
+    m_emsStream = new EmsStream("/dev/ttyUSB0");
+    connect(m_emsStream, SIGNAL(variableUpdated(const TelemetryVariable &)),
+            &m_updater, SLOT(update(const TelemetryVariable &)));
 }
 
 

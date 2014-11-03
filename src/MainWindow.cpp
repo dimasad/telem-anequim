@@ -1,10 +1,12 @@
 #include "MainWindow.hpp"
 
 #include <QtGui>
+#include <QAction>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLabel>
 #include <QSerialPortInfo>
+#include <QToolBar>
 #include <QVBoxLayout>
 
 #include <QDebug>
@@ -82,9 +84,8 @@ SettingsDialog::SettingsDialog(Settings *settings, QWidget *parent) :
     layout->addRow("EFIS port:", &m_efisPortComboBox);
     layout->addRow("EMS port:", &m_emsPortComboBox);
     layout->addRow(buttonBox);
-    
     setLayout(layout);
-
+    
     connect(this, SIGNAL(accepted()), this, SLOT(saveSettings()));
 }
 
@@ -113,9 +114,15 @@ SettingsDialog::setCurrentPort(const QString &portName, QComboBox &comboBox)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    SettingsDialog settingsDialog(&m_settings);
-    settingsDialog.exec();
+    auto showSettings = new QAction("Settings", this);
+    showSettings->setIcon(QIcon(":/images/settings.ico"));
+    connect(showSettings, SIGNAL(triggered()), 
+            this, SLOT(showSettingsDialog()));
 
+    auto mainToolBar = addToolBar("Main");
+    mainToolBar->setMovable(false);
+    mainToolBar->addAction(showSettings);
+    
     AngularGauge *angularGauge = new AngularGauge;
     angularGauge->setNumMajorTicks(6);
     angularGauge->setValue(20);
@@ -137,4 +144,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(centralWidget);
     
     setWindowTitle(tr("Telemetry"));
+}
+
+
+void
+MainWindow::showSettingsDialog()
+{
+    SettingsDialog settingsDialog(&m_settings);
+    settingsDialog.exec();
 }

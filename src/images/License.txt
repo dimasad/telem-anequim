@@ -1,0 +1,22 @@
+=============== Gauge Artwork ===============
+Original gauge artwork by Edouard Lafargue (edouard@lafargue.name)
+for the OpenPilot project, covered by the CC-BY-SA license.
+
+Modified by Dimas Abreu Dutra (ddutra@cpdee.ufmg.br)
+
+Files:
+    angular-gauge.svg
+    linear-horizontal-gauge.svg
+    linear-vertical-gauge.svg
+
+
+=============== Settings Icon ===============
+Artwork from VistaICO.com, covered by the Creative Commons Attribution 3.0
+Unported License (CC BY 3.0).
+    http://creativecommons.org/licenses/by/3.0/
+
+Source:
+    https://www.iconfinder.com/icons/49236/config_preferences_settings_tool_tools_icon
+
+Files:
+    settings.ico

@@ -12,6 +12,12 @@
 #include <QSettings>
 
 
+/* TODO:
+ * - Prevent settings dialog from allowing user to select both streams on
+ * the same port.
+ */
+
+
 class GaugeUpdater : public QObject
 {
     Q_OBJECT
@@ -77,10 +83,13 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     
- public:
+public:
     explicit MainWindow(QWidget *parent = 0);
-    
- private:
+
+public slots:
+    void showSettingsDialog();
+
+private:
     Settings m_settings;
     GaugeUpdater m_updater;
 };

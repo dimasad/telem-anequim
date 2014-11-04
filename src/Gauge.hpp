@@ -133,4 +133,65 @@ protected:
 };
 
 
+class SvgGauge : public QGraphicsView
+{
+    Q_OBJECT
+
+public:
+    SvgGauge(const QString &svgFile, QWidget *parent=0);
+
+protected:
+    QSvgRenderer m_renderer;
+    
+    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                          qreal zValue);
+    void resizeEvent(QResizeEvent * event);
+};
+
+
+class TickedSvgGauge : public SvgGauge
+{
+    Q_OBJECT
+    
+public:
+    TickedSvgGauge(const QString &svgFile, QWidget *parent=0);
+    void setNumMajorTicks(unsigned newNumMajorTicks);
+    void setValueRange(double valueMin, double valueMax);
+    
+protected:
+    double m_valueMin = 0, m_valueMax = 1;
+    unsigned m_numMajorTicks;
+    QList<QGraphicsSvgItem *> m_majorTicks;
+    QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
+    
+    void updateMajorTicks();
+    
+    virtual void placeMajorTick(double value) = 0;
+};
+
+
+class AngularSvgGauge : public TickedSvgGauge
+{
+    Q_OBJECT
+    
+public:
+    AngularSvgGauge(const QString &svgFile, QWidget *parent=0);
+    void setAngleRange(double angleMin, double angleMax);
+    
+protected:
+    enum GraphicLayers {
+        BackgroundLayer, InfoLayer, NeedleLayer, ForegroundLayer
+    };
+    
+    QGraphicsSvgItem m_background, m_needle, m_foreground;
+    QPointF m_pivot;
+    double m_angleMin, m_angleMax;
+
+    void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                          qreal zValue);
+    void placeMajorTick(double value);
+    double valueToAngle(double value);    
+};
+
+
 #endif // GAUGE_HPP

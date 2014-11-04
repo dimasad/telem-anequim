@@ -1,5 +1,6 @@
 #include "Gauge.hpp"
 
+#include <QtGlobal>
 #include <QGraphicsSvgItem>
 #include <QGraphicsSimpleTextItem>
 #include <QLocale>
@@ -384,4 +385,139 @@ static QPointF
 bottomCenter(const QRectF &rect)
 {
     return QPointF(rect.center().x(), rect.bottom());
+}
+
+
+SvgGauge::SvgGauge(const QString &svgFile, QWidget *parent) :
+    QGraphicsView(parent), m_renderer(svgFile)
+{
+    setScene(new QGraphicsScene(this));
+    setStyleSheet("background: transparent");
+    
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    setSceneRect(m_renderer.viewBoxF());
+}
+
+
+void
+SvgGauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
+                           qreal zValue)
+{
+    element->setSharedRenderer(&m_renderer);
+    element->setElementId(elementId);
+    element->setPos(m_renderer.boundsOnElement(elementId).topLeft());
+    element->setZValue(zValue);
+    
+    scene()->addItem(element);
+}
+
+
+void
+SvgGauge::resizeEvent(QResizeEvent *event)
+{
+    fitInView(sceneRect(), Qt::KeepAspectRatio);
+    QGraphicsView::resizeEvent(event);
+}
+
+
+TickedSvgGauge::TickedSvgGauge(const QString &svgFile, QWidget *parent) :
+    SvgGauge(svgFile, parent)
+{
+}
+
+
+void
+TickedSvgGauge::setNumMajorTicks(unsigned newNumMajorTicks)
+{
+    m_numMajorTicks = newNumMajorTicks;
+    updateMajorTicks();
+}
+
+
+void
+TickedSvgGauge::setValueRange(double valueMin, double valueMax)
+{
+    Q_ASSERT(valueMin <= valueMax);
+    
+    m_valueMin = valueMin;
+    m_valueMax = valueMax;
+    
+    updateMajorTicks();
+}
+
+
+void
+TickedSvgGauge::updateMajorTicks()
+{
+    for (auto majorTick : m_majorTicks)
+        delete majorTick;
+    for (auto majorTickLabel : m_majorTickLabels)
+        delete majorTickLabel;
+    
+    m_majorTicks.clear();
+    m_majorTickLabels.clear();
+    
+    double valueRange = m_valueMax - m_valueMin;
+    double valueIncrement = valueRange / std::max(m_numMajorTicks - 1, 1u);
+    for (unsigned i = 0; i < m_numMajorTicks; i++)
+        placeMajorTick(m_valueMin + i * valueIncrement);
+}
+
+
+AngularSvgGauge::AngularSvgGauge(const QString &svgFile, QWidget *parent) :
+    TickedSvgGauge(svgFile, parent)
+{
+    m_pivot = m_renderer.boundsOnElement("pivot").center();
+    
+    initializeFromId(&m_background, "background", BackgroundLayer);
+    initializeFromId(&m_needle, "needle", NeedleLayer);
+    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
+}
+
+
+void
+AngularSvgGauge::setAngleRange(double angleMin, double angleMax)
+{
+    Q_ASSERT(angleMin <= angleMax);
+
+    m_angleMin = angleMin;    
+    m_angleMax = angleMax;
+}
+
+
+void
+AngularSvgGauge::initializeFromId(QGraphicsSvgItem *element,
+                                  const QString &elementId, qreal zValue)
+{
+    TickedSvgGauge::initializeFromId(element, elementId, zValue);
+    element->setTransformOriginPoint(element->mapFromScene(m_pivot));
+}
+
+void 
+AngularSvgGauge::placeMajorTick(double value)
+{
+    double angle = valueToAngle(value);
+
+    auto tick = new QGraphicsSvgItem;
+    initializeFromId(tick, "majorTick", InfoLayer);
+    tick->setRotation(angle);
+    m_majorTicks.append(tick);
+}
+
+
+double
+AngularSvgGauge::valueToAngle(double value)
+{
+    if (value < m_valueMin)
+        return m_angleMin;
+    
+    if (value > m_valueMax)
+        return m_angleMax;
+    
+    double normalizedValue = (value - m_valueMin) / (m_valueMax - m_valueMin);
+    double angle = normalizedValue * (m_angleMax - m_angleMin) + m_angleMin;
+    
+    return remainder(angle, 360);
 }

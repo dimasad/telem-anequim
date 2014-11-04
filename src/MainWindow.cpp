@@ -123,12 +123,13 @@ MainWindow::MainWindow(QWidget *parent) :
     mainToolBar->setMovable(false);
     mainToolBar->addAction(showSettings);
     
-    AngularGauge *angularGauge = new AngularGauge;
-    angularGauge->setValueLimits(0, 200);
+    auto *angularGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    angularGauge->setValueRange(0, 200);
+    angularGauge->setAngleRange(-90, 90);
     angularGauge->setNumMajorTicks(5);
-    angularGauge->addLabel(u8"Oil temperature (\u00B0F)", 120, 200);
-    angularGauge->setValueLabelPos(120, 220);    
-    m_updater.link("oil temperature", angularGauge);
+    //angularGauge->addLabel(u8"Oil temperature (\u00B0F)", 120, 200);
+    //angularGauge->setValueLabelPos(120, 220);    
+    //m_updater.link("oil temperature", angularGauge);
 
     auto *cht1Gauge = new HorizontalLinearGauge;
     cht1Gauge->setValueLimits(0, 500);
@@ -139,7 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cht2Gauge->setValueLimits(0, 500);
     cht2Gauge->setNumMajorTicks(6);
     m_updater.link("cht2", cht2Gauge);
-
+    
     auto *cht3Gauge = new HorizontalLinearGauge;
     cht3Gauge->setValueLimits(0, 500);
     cht3Gauge->setNumMajorTicks(6);

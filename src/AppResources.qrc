@@ -2,6 +2,7 @@
 <qresource>
     <file>images/settings.ico</file>
     <file>images/angular-gauge.svg</file>
+    <file>images/angular-gauge-deluxe.svg</file>
     <file>images/linear-horizontal-gauge.svg</file>
     <file>images/linear-vertical-gauge.svg</file>
 </qresource>

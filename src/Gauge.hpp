@@ -145,7 +145,7 @@ protected:
     
     void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
                           qreal zValue);
-    void resizeEvent(QResizeEvent * event);
+    void resizeEvent(QResizeEvent *event);
 };
 
 
@@ -160,7 +160,7 @@ public:
     
 protected:
     double m_valueMin = 0, m_valueMax = 1;
-    unsigned m_numMajorTicks;
+    unsigned m_numMajorTicks = 0;
     QList<QGraphicsSvgItem *> m_majorTicks;
     QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
     
@@ -177,6 +177,8 @@ class AngularSvgGauge : public TickedSvgGauge
 public:
     AngularSvgGauge(const QString &svgFile, QWidget *parent=0);
     void setAngleRange(double angleMin, double angleMax);
+    void setValue(double value);
+    void setValueLabelPos(double xPos, double yPos);
     
 protected:
     enum GraphicLayers {
@@ -184,8 +186,9 @@ protected:
     };
     
     QGraphicsSvgItem m_background, m_needle, m_foreground;
+    QGraphicsSimpleTextItem m_valueLabel;
     QPointF m_pivot;
-    double m_angleMin, m_angleMax;
+    double m_angleMin = -90, m_angleMax = 90;
 
     void initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
                           qreal zValue);

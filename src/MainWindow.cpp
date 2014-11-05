@@ -127,8 +127,9 @@ MainWindow::MainWindow(QWidget *parent) :
     angularGauge->setValueRange(0, 200);
     angularGauge->setAngleRange(-90, 90);
     angularGauge->setNumMajorTicks(5);
+    angularGauge->setValueLabelPos(120, 220);
+    angularGauge->setValue(30);
     //angularGauge->addLabel(u8"Oil temperature (\u00B0F)", 120, 200);
-    //angularGauge->setValueLabelPos(120, 220);    
     //m_updater.link("oil temperature", angularGauge);
 
     auto *cht1Gauge = new HorizontalLinearGauge;
@@ -166,10 +167,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(centralWidget);
     
     setWindowTitle(tr("Telemetry"));
-
+    
+    /*
     m_emsStream = new EmsStream("/dev/ttyUSB0");
     connect(m_emsStream, SIGNAL(variableUpdated(const TelemetryVariable &)),
             &m_updater, SLOT(update(const TelemetryVariable &)));
+    */
 }
 
 

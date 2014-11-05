@@ -87,7 +87,7 @@ Gauge::clearTicks()
 AngularGauge::AngularGauge(QWidget *parent)
     : Gauge(parent)
 {    
-    m_renderer.load(QString(":/images/angular-gauge.svg"));
+    m_renderer.load(QString(":/images/angular-gauge-deluxe.svg"));
     m_pivot = m_renderer.boundsOnElement("pivot").center();
     
     initializeFromId(&m_background, "background", BackgroundLayer);
@@ -160,7 +160,7 @@ AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
         tickLabel->setText(QLocale().toString(value));
         tickLabel->setBrush(QColor("white"));
         tickLabel->setZValue(InfoLayer);
-        scene()->addItem(tickLabel);        
+        scene()->addItem(tickLabel);
         m_majorTickLabels.append(tickLabel);
 
         if (angle < -135) {
@@ -396,7 +396,7 @@ SvgGauge::SvgGauge(const QString &svgFile, QWidget *parent) :
     
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    
+
     setSceneRect(m_renderer.viewBoxF());
 }
 
@@ -474,6 +474,9 @@ AngularSvgGauge::AngularSvgGauge(const QString &svgFile, QWidget *parent) :
     initializeFromId(&m_background, "background", BackgroundLayer);
     initializeFromId(&m_needle, "needle", NeedleLayer);
     initializeFromId(&m_foreground, "foreground", ForegroundLayer);
+
+    m_valueLabel.setBrush(QColor("white"));
+    m_valueLabel.setZValue(InfoLayer);
 }
 
 
@@ -488,6 +491,22 @@ AngularSvgGauge::setAngleRange(double angleMin, double angleMax)
 
 
 void
+AngularSvgGauge::setValue(double value)
+{
+    m_needle.setRotation(valueToAngle(value));
+    m_valueLabel.setText(QLocale().toString(value));
+}
+
+
+void
+AngularSvgGauge::setValueLabelPos(double xPos, double yPos)
+{
+    m_valueLabel.setPos(xPos, yPos);
+    scene()->addItem(&m_valueLabel);
+}
+
+
+void
 AngularSvgGauge::initializeFromId(QGraphicsSvgItem *element,
                                   const QString &elementId, qreal zValue)
 {
@@ -495,15 +514,50 @@ AngularSvgGauge::initializeFromId(QGraphicsSvgItem *element,
     element->setTransformOriginPoint(element->mapFromScene(m_pivot));
 }
 
+
 void 
 AngularSvgGauge::placeMajorTick(double value)
 {
     double angle = valueToAngle(value);
 
     auto tick = new QGraphicsSvgItem;
+    
     initializeFromId(tick, "majorTick", InfoLayer);
     tick->setRotation(angle);
     m_majorTicks.append(tick);
+    
+    auto *tickLabel = new QGraphicsSimpleTextItem();
+    tickLabel->setText(QLocale().toString(value));
+    tickLabel->setBrush(QColor("white"));
+    tickLabel->setZValue(InfoLayer);
+    scene()->addItem(tickLabel);        
+    m_majorTickLabels.append(tickLabel);
+    
+    if (angle < -135) {
+        QPointF anchorPoint = tick->sceneBoundingRect().topRight();
+        anchorItem(tickLabel, AnchorBottom, anchorPoint);
+    } else if (angle >= -135 && angle < -90) {
+        QPointF anchorPoint = tick->sceneBoundingRect().topRight();
+        anchorItem(tickLabel, AnchorLeft, anchorPoint);
+    } else if (angle >= -90 && angle < -45) {
+        QPointF anchorPoint = tick->sceneBoundingRect().bottomRight();
+        anchorItem(tickLabel, AnchorLeft, anchorPoint);
+    } else if (angle >= -45 && angle < 0) {
+        QPointF anchorPoint = tick->sceneBoundingRect().bottomRight();
+        anchorItem(tickLabel, AnchorTop, anchorPoint);
+    } else if (angle >= 0 && angle < 45) {
+        QPointF anchorPoint = tick->sceneBoundingRect().bottomLeft();
+        anchorItem(tickLabel, AnchorTop, anchorPoint);
+    } else if (angle >= 45 && angle < 90) {
+        QPointF anchorPoint = tick->sceneBoundingRect().bottomLeft();
+        anchorItem(tickLabel, AnchorRight, anchorPoint);
+    } else if (angle >= 90 && angle < 135) {
+        QPointF anchorPoint = tick->sceneBoundingRect().topLeft();
+        anchorItem(tickLabel, AnchorRight, anchorPoint);
+    } else if (angle >= 135) {
+        QPointF anchorPoint = tick->sceneBoundingRect().topLeft();
+        anchorItem(tickLabel, AnchorBottom, anchorPoint);
+    }
 }
 
 

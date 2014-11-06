@@ -29,7 +29,8 @@ class TelemetryStream : public QObject
     Q_OBJECT
     
 public:
-    TelemetryStream(const QString & portName, int message_body_size);
+    TelemetryStream(const QString & portName, int message_body_size,
+                    QObject *parent=0);
     
 protected:
     QSerialPort port;
@@ -39,8 +40,10 @@ protected:
     virtual bool messageValid(quint8 checksum, const QByteArray & payload) = 0;
     virtual TelemetryMessage parseMessage(const QByteArray & body) = 0;
 
+
 public slots:
-    void triggerRead();
+    void setPort(const QString &portName);
+    void triggerRead();    
 
 signals:
     void variableUpdated(const TelemetryVariable & var);
@@ -52,7 +55,7 @@ class EmsStream : public TelemetryStream
     Q_OBJECT
     
 public:
-    EmsStream(const QString & portName);
+    EmsStream(const QString &portName, QObject *parent=0);
     bool parseGeneralPurpose(int & cursor, const QByteArray & body, 
                              TelemetryVariable & var);
     virtual bool messageValid(quint8 checksum, const QByteArray & payload);
@@ -65,7 +68,7 @@ class EfisStream : public TelemetryStream
     Q_OBJECT
     
 public:
-    EfisStream(const QString & portName);
+    EfisStream(const QString &portName, QObject *parent=0);
     virtual bool messageValid(quint8 checksum, const QByteArray & payload);
     virtual TelemetryMessage parseMessage(const QByteArray & body);
 };

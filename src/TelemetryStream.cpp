@@ -20,16 +20,16 @@ TelemetryVariable::operator QString() const
 }
 
 
-TelemetryStream::TelemetryStream(const QString & portName,
-                                 int message_body_size) :
-    port(portName), message_body_size(message_body_size)
+TelemetryStream::TelemetryStream(const QString &portName,
+                                 int message_body_size, QObject *parent) :
+    QObject(parent), message_body_size(message_body_size)
 {
     total_message_size = message_body_size + MESSAGE_FOOTER_SIZE;
-    
-    connect(&port, SIGNAL(readyRead()), this, SLOT(triggerRead()));
-    port.open(QIODevice::ReadOnly);
+
+    setPort(portName);
     port.setBaudRate(QSerialPort::Baud115200);
     port.setReadBufferSize(total_message_size);
+    connect(&port, SIGNAL(readyRead()), this, SLOT(triggerRead()));
 }
 
 
@@ -63,6 +63,17 @@ TelemetryStream::triggerRead()
 }
 
 
+void
+TelemetryStream::setPort(const QString &portName)
+{
+    if (port.isOpen())
+        port.close();
+    
+    port.setPortName(portName);
+    port.open(QIODevice::ReadOnly);
+}
+
+
 double
 TelemetryStream::parseDouble(int & cursor, unsigned len,
                              const QByteArray & body)
@@ -88,8 +99,8 @@ TelemetryStream::parseHex(int & cursor, unsigned len, const QByteArray & body)
 }
 
 
-EmsStream::EmsStream(const QString & portName) :
-    TelemetryStream(portName, EMS_MESSAGE_BODY_SIZE)
+EmsStream::EmsStream(const QString & portName, QObject *parent) :
+    TelemetryStream(portName, EMS_MESSAGE_BODY_SIZE, parent)
 {
 }
 
@@ -287,8 +298,8 @@ EmsStream::parseMessage(const QByteArray & body)
 }
 
 
-EfisStream::EfisStream(const QString & portName) :
-    TelemetryStream(portName, EFIS_MESSAGE_BODY_SIZE)
+EfisStream::EfisStream(const QString & portName, QObject *parent) :
+    TelemetryStream(portName, EFIS_MESSAGE_BODY_SIZE, parent)
 {
 }
 

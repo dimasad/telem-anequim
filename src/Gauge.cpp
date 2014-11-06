@@ -117,6 +117,36 @@ AngularSvgGauge::AngularSvgGauge(const QString &svgFile, QWidget *parent) :
 
 
 void
+AngularSvgGauge::addRangeBand(const QColor &color, 
+                              double startValue, double endValue)
+{
+    Q_ASSERT(startValue <= endValue);
+    
+    double startAngle = -valueToAngle(startValue) - 90;
+    double endAngle = -valueToAngle(endValue) - 90;
+    
+    double outerRadius = (m_renderer.boundsOnElement("minorTick").top() - 
+                          m_pivot.y());
+    double innerRadius = (m_renderer.boundsOnElement("minorTick").bottom() - 
+                          m_pivot.y());
+    QRectF outerRect(m_pivot.x() - outerRadius, m_pivot.y() - outerRadius,
+                     2 * outerRadius, 2 * outerRadius);
+    QRectF innerRect(m_pivot.x() - innerRadius, m_pivot.y() - innerRadius,
+                     2 * innerRadius, 2 * innerRadius);
+    
+    QPainterPath path(m_pivot);
+    path.arcTo(outerRect, startAngle, endAngle - startAngle);
+    path.arcTo(innerRect, endAngle, -(endAngle - startAngle));
+    
+    auto band = new QGraphicsPathItem(path);
+    band->setZValue(RangeBandLayer);
+    band->setBrush(color);
+    band->setPen(QPen(Qt::NoPen));
+    scene()->addItem(band);
+}
+
+
+void
 AngularSvgGauge::setAngleRange(double angleMin, double angleMax)
 {
     Q_ASSERT(angleMin <= angleMax);
@@ -223,13 +253,31 @@ AngularSvgGauge::valueToAngle(double value)
 LinearSvgGauge::LinearSvgGauge(const QString &svgFile, QWidget *parent) :
     TickedSvgGauge(svgFile, parent)
 {
-    QRectF cursorRange = m_renderer.boundsOnElement("cursorRange");
-    m_startPos = cursorRange.left();
-    m_endPos = cursorRange.right();
+    m_cursorRange = m_renderer.boundsOnElement("cursorRange");
+    m_startPos = m_cursorRange.left();
+    m_endPos = m_cursorRange.right();
     
     m_background = addItemFromElement("background", BackgroundLayer);
     m_cursor = addItemFromElement("cursor", CursorLayer);
     m_foreground = addItemFromElement("foreground", ForegroundLayer);
+}
+
+
+void
+LinearSvgGauge::addRangeBand(const QColor &color, 
+                             double startValue, double endValue)
+{
+    Q_ASSERT(startValue <= endValue);
+
+    QRectF bandRect(m_cursorRange);
+    bandRect.setLeft(valueToPos(startValue));
+    bandRect.setRight(valueToPos(endValue));
+    
+    auto band = new QGraphicsRectItem(bandRect);
+    band->setZValue(BackgroundLayer);
+    band->setBrush(color);
+    band->setPen(QPen(Qt::NoPen));
+    scene()->addItem(band);
 }
 
 
@@ -256,9 +304,9 @@ LinearSvgGauge::placeMajorTick(double value)
     m_majorTickLabels.append(tickLabel);
     
     QRectF tickBoundingRect = tick->sceneBoundingRect();
-    if (pos == m_startPos)
+    if (value == m_valueMin)
         anchorItem(tickLabel, AnchorTopLeft, tickBoundingRect.bottomLeft());
-    else if (pos == m_endPos)
+    else if (value == m_valueMax)
         anchorItem(tickLabel, AnchorTopRight, tickBoundingRect.bottomRight());
     else
         anchorItem(tickLabel, AnchorTop, bottomCenter(tickBoundingRect));

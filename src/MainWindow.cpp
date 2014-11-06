@@ -142,11 +142,14 @@ MainWindow::MainWindow(QWidget *parent) :
     rpmGauge->setNumMajorTicks(5);
     rpmGauge->setValueLabelPos(120, 220);
     rpmGauge->setTextColor(QColor("white"));
+    rpmGauge->addRangeBand(QColor("darkred"), 100, 200);
     m_updater.link("RPM", [=](double value){rpmGauge->setValue(value);});
     
     auto cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht1Gauge->setValueRange(0, 500);
     cht1Gauge->setNumMajorTicks(3);
+    cht1Gauge->addRangeBand(QColor("yellowgreen"), 0, 250);
+    cht1Gauge->addRangeBand(QColor("darkred"), 400, 500);
     m_updater.link("cht1", [=](double value){cht1Gauge->setValue(value);});
 
     auto cht2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");

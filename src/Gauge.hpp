@@ -58,13 +58,14 @@ class AngularSvgGauge : public TickedSvgGauge
     
 public:
     AngularSvgGauge(const QString &svgFile, QWidget *parent=0);
+    void addRangeBand(const QColor &color, double startValue, double endValue);
     void setAngleRange(double angleMin, double angleMax);
     void setValue(double value);
     void setValueLabelPos(double xPos, double yPos);
     
 protected:
     enum GraphicLayers {
-        BackgroundLayer, InfoLayer, NeedleLayer, ForegroundLayer
+        BackgroundLayer, RangeBandLayer, InfoLayer, NeedleLayer, ForegroundLayer
     };
     
     QGraphicsSvgItem *m_background, *m_needle, *m_foreground;
@@ -85,6 +86,7 @@ class LinearSvgGauge : public TickedSvgGauge
     
 public:
     LinearSvgGauge(const QString &svgFile, QWidget *parent=0);
+    void addRangeBand(const QColor &color, double startValue, double endValue);
     void setValue(double value);
     
 protected:
@@ -94,6 +96,7 @@ protected:
     
     QGraphicsSvgItem *m_background, *m_cursor, *m_foreground;
     QGraphicsSimpleTextItem *m_valueLabel = 0;
+    QRectF m_cursorRange;
     double m_startPos, m_endPos;
     
     void moveToPos(QGraphicsItem *item, double pos);

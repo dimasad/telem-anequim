@@ -74,121 +74,13 @@ Gauge::setValueLabelPos(double xPos, double yPos)
 void
 Gauge::clearTicks()
 {
-    for (auto majorTick : m_majorTicks)
+    for (auto majorTick: m_majorTicks)
         delete majorTick;
-    for (auto majorTickLabel : m_majorTickLabels)
+    for (auto majorTickLabel: m_majorTickLabels)
         delete majorTickLabel;
     
     m_majorTicks.clear();
     m_majorTickLabels.clear();
-}
-
-
-AngularGauge::AngularGauge(QWidget *parent)
-    : Gauge(parent)
-{    
-    m_renderer.load(QString(":/images/angular-gauge-deluxe.svg"));
-    m_pivot = m_renderer.boundsOnElement("pivot").center();
-    
-    initializeFromId(&m_background, "background", BackgroundLayer);
-    initializeFromId(&m_needle, "needle", NeedleLayer);
-    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
-
-    setSceneRect(m_renderer.viewBoxF());
-}
-
-
-void
-AngularGauge::setAngleLimits(double min, double max)
-{
-    m_angleMax = max;
-    m_angleMin = min;
-}
-
-
-void
-AngularGauge::setValue(double value)
-{
-    m_needle.setRotation(valueToAngle(value));
-    m_valueLabel.setText(QLocale().toString(value));
-}
-
-
-void
-AngularGauge::initializeFromId(QGraphicsSvgItem *element,
-                               const QString &elementId, qreal zValue)
-{
-    Gauge::initializeFromId(element, elementId, zValue);
-    element->setTransformOriginPoint(element->mapFromScene(m_pivot));
-}
-
-
-double
-AngularGauge::valueToAngle(double value)
-{
-    if (value < m_valueMin)
-        return m_angleMin;
-    
-    if (value > m_valueMax)
-        return m_angleMax;
-    
-    double normalizedValue = (value - m_valueMin) / (m_valueMax - m_valueMin);
-    double angle = normalizedValue * (m_angleMax - m_angleMin) + m_angleMin;
-    
-    return remainder(angle, 360);
-}
-
-
-void
-AngularGauge::setNumMajorTicks(unsigned numMajorTicks)
-{
-    m_numMajorTicks = numMajorTicks;
-    clearTicks();
-    
-    double valueRange = m_valueMax - m_valueMin;
-    double valueIncrement = valueRange / std::max(m_numMajorTicks - 1, 1u);
-    for (unsigned i = 0; i < m_numMajorTicks; i++) {
-        double value = m_valueMin + i * valueIncrement;
-        double angle = valueToAngle(value);
-        
-        QGraphicsSvgItem *tick = new QGraphicsSvgItem;
-        initializeFromId(tick, "majorTick", InfoLayer);
-        tick->setRotation(angle);
-        m_majorTicks.append(tick);
-        
-        QGraphicsSimpleTextItem *tickLabel = new QGraphicsSimpleTextItem();
-        tickLabel->setText(QLocale().toString(value));
-        tickLabel->setBrush(QColor("white"));
-        tickLabel->setZValue(InfoLayer);
-        scene()->addItem(tickLabel);
-        m_majorTickLabels.append(tickLabel);
-
-        if (angle < -135) {
-            QPointF anchorPoint = tick->sceneBoundingRect().topRight();
-            anchorItem(tickLabel, AnchorBottom, anchorPoint);
-        } else if (angle >= -135 && angle < -90) {
-            QPointF anchorPoint = tick->sceneBoundingRect().topRight();
-            anchorItem(tickLabel, AnchorLeft, anchorPoint);
-        } else if (angle >= -90 && angle < -45) {
-            QPointF anchorPoint = tick->sceneBoundingRect().bottomRight();
-            anchorItem(tickLabel, AnchorLeft, anchorPoint);
-        } else if (angle >= -45 && angle < 0) {
-            QPointF anchorPoint = tick->sceneBoundingRect().bottomRight();
-            anchorItem(tickLabel, AnchorTop, anchorPoint);
-        } else if (angle >= 0 && angle < 45) {
-            QPointF anchorPoint = tick->sceneBoundingRect().bottomLeft();
-            anchorItem(tickLabel, AnchorTop, anchorPoint);
-        } else if (angle >= 45 && angle < 90) {
-            QPointF anchorPoint = tick->sceneBoundingRect().bottomLeft();
-            anchorItem(tickLabel, AnchorRight, anchorPoint);
-        } else if (angle >= 90 && angle < 135) {
-            QPointF anchorPoint = tick->sceneBoundingRect().topLeft();
-            anchorItem(tickLabel, AnchorRight, anchorPoint);
-        } else if (angle >= 135) {
-            QPointF anchorPoint = tick->sceneBoundingRect().topLeft();
-            anchorItem(tickLabel, AnchorBottom, anchorPoint);
-        }
-    }
 }
 
 
@@ -401,16 +293,18 @@ SvgGauge::SvgGauge(const QString &svgFile, QWidget *parent) :
 }
 
 
-void
-SvgGauge::initializeFromId(QGraphicsSvgItem *element, const QString &elementId,
-                           qreal zValue)
+QGraphicsSvgItem*
+SvgGauge::addItemFromElement(const QString &elementId, qreal zValue)
 {
+    QGraphicsSvgItem *element = new QGraphicsSvgItem;
     element->setSharedRenderer(&m_renderer);
     element->setElementId(elementId);
     element->setPos(m_renderer.boundsOnElement(elementId).topLeft());
     element->setZValue(zValue);
     
     scene()->addItem(element);
+    
+    return element;
 }
 
 
@@ -422,17 +316,23 @@ SvgGauge::resizeEvent(QResizeEvent *event)
 }
 
 
-TickedSvgGauge::TickedSvgGauge(const QString &svgFile, QWidget *parent) :
-    SvgGauge(svgFile, parent)
-{
-}
-
-
 void
 TickedSvgGauge::setNumMajorTicks(unsigned newNumMajorTicks)
 {
     m_numMajorTicks = newNumMajorTicks;
     updateMajorTicks();
+}
+
+
+void
+TickedSvgGauge::setTextColor(const QColor &newColor)
+{
+    m_textColor = newColor;
+    for (auto tickLabel: m_majorTickLabels)
+        tickLabel->setBrush(m_textColor);
+    for (auto textLabel: m_textLabels)
+        textLabel->setBrush(m_textColor);
+    
 }
 
 
@@ -451,9 +351,9 @@ TickedSvgGauge::setValueRange(double valueMin, double valueMax)
 void
 TickedSvgGauge::updateMajorTicks()
 {
-    for (auto majorTick : m_majorTicks)
+    for (auto majorTick: m_majorTicks)
         delete majorTick;
-    for (auto majorTickLabel : m_majorTickLabels)
+    for (auto majorTickLabel: m_majorTickLabels)
         delete majorTickLabel;
     
     m_majorTicks.clear();
@@ -471,12 +371,9 @@ AngularSvgGauge::AngularSvgGauge(const QString &svgFile, QWidget *parent) :
 {
     m_pivot = m_renderer.boundsOnElement("pivot").center();
     
-    initializeFromId(&m_background, "background", BackgroundLayer);
-    initializeFromId(&m_needle, "needle", NeedleLayer);
-    initializeFromId(&m_foreground, "foreground", ForegroundLayer);
-
-    m_valueLabel.setBrush(QColor("white"));
-    m_valueLabel.setZValue(InfoLayer);
+    m_background = addItemFromElement("background", BackgroundLayer);
+    m_needle = addItemFromElement("needle", NeedleLayer);
+    m_foreground = addItemFromElement("foreground", ForegroundLayer);    
 }
 
 
@@ -493,25 +390,34 @@ AngularSvgGauge::setAngleRange(double angleMin, double angleMax)
 void
 AngularSvgGauge::setValue(double value)
 {
-    m_needle.setRotation(valueToAngle(value));
-    m_valueLabel.setText(QLocale().toString(value));
+    m_needle->setRotation(valueToAngle(value));
+    if (m_valueLabel != 0)
+        m_valueLabel->setText(QLocale().toString(value));
 }
 
 
 void
 AngularSvgGauge::setValueLabelPos(double xPos, double yPos)
 {
-    m_valueLabel.setPos(xPos, yPos);
-    scene()->addItem(&m_valueLabel);
+    if (m_valueLabel == 0) {
+        m_valueLabel = new QGraphicsSimpleTextItem;
+        m_valueLabel->setBrush(m_textColor);
+        m_valueLabel->setZValue(InfoLayer);
+        m_textLabels.append(m_valueLabel);
+    }
+    
+    m_valueLabel->setPos(xPos, yPos);
+    scene()->addItem(m_valueLabel);
 }
 
 
-void
-AngularSvgGauge::initializeFromId(QGraphicsSvgItem *element,
-                                  const QString &elementId, qreal zValue)
+QGraphicsSvgItem*
+AngularSvgGauge::addItemFromElement(const QString &elementId, qreal zValue)
 {
-    TickedSvgGauge::initializeFromId(element, elementId, zValue);
+    auto element = TickedSvgGauge::addItemFromElement(elementId, zValue);
     element->setTransformOriginPoint(element->mapFromScene(m_pivot));
+    
+    return element;
 }
 
 
@@ -520,17 +426,15 @@ AngularSvgGauge::placeMajorTick(double value)
 {
     double angle = valueToAngle(value);
 
-    auto tick = new QGraphicsSvgItem;
-    
-    initializeFromId(tick, "majorTick", InfoLayer);
+    auto tick = addItemFromElement("majorTick", InfoLayer);
     tick->setRotation(angle);
     m_majorTicks.append(tick);
     
     auto *tickLabel = new QGraphicsSimpleTextItem();
     tickLabel->setText(QLocale().toString(value));
-    tickLabel->setBrush(QColor("white"));
+    tickLabel->setBrush(m_textColor);
     tickLabel->setZValue(InfoLayer);
-    scene()->addItem(tickLabel);        
+    scene()->addItem(tickLabel);
     m_majorTickLabels.append(tickLabel);
     
     if (angle < -135) {

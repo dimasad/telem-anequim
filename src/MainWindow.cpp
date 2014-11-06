@@ -128,6 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
     angularGauge->setAngleRange(-90, 90);
     angularGauge->setNumMajorTicks(5);
     angularGauge->setValueLabelPos(120, 220);
+    angularGauge->setTextColor(QColor("white"));
     angularGauge->setValue(30);
     //angularGauge->addLabel(u8"Oil temperature (\u00B0F)", 120, 200);
     //m_updater.link("oil temperature", angularGauge);

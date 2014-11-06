@@ -29,6 +29,7 @@ SvgGauge::SvgGauge(const QString &svgFile, QWidget *parent) :
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setSceneRect(m_renderer.viewBoxF());
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
 

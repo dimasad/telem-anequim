@@ -66,6 +66,9 @@ TelemetryStream::triggerRead()
 void
 TelemetryStream::setPort(const QString &portName)
 {
+    if (portName.isEmpty())
+        return;
+    
     if (port.isOpen())
         port.close();
     

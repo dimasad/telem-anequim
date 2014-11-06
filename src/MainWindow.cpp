@@ -115,11 +115,23 @@ SettingsDialog::setCurrentPort(const QString &portName, QComboBox &comboBox)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    m_efisStream = new EfisStream(m_settings.efisPort(), this);
+    m_emsStream = new EmsStream(m_settings.emsPort(), this);
+    
+    connect(&m_settings, SIGNAL(efisPortChanged(const QString &)),
+            m_efisStream, SLOT(setPort(const QString &)));
+    connect(&m_settings, SIGNAL(emsPortChanged(const QString &)),
+            m_emsStream, SLOT(setPort(const QString &)));
+    connect(m_efisStream, SIGNAL(variableUpdated(const TelemetryVariable &)),
+            &m_updater, SLOT(update(const TelemetryVariable &)));
+    connect(m_emsStream, SIGNAL(variableUpdated(const TelemetryVariable &)),
+            &m_updater, SLOT(update(const TelemetryVariable &)));
+    
     auto showSettings = new QAction("Settings", this);
     showSettings->setIcon(QIcon(":/images/settings.ico"));
     connect(showSettings, SIGNAL(triggered()), 
             this, SLOT(showSettingsDialog()));
-
+    
     auto mainToolBar = addToolBar("Main");
     mainToolBar->setMovable(false);
     mainToolBar->addAction(showSettings);
@@ -130,23 +142,27 @@ MainWindow::MainWindow(QWidget *parent) :
     rpmGauge->setNumMajorTicks(5);
     rpmGauge->setValueLabelPos(120, 220);
     rpmGauge->setTextColor(QColor("white"));
-    //TODO: link gauges
+    m_updater.link("RPM", [=](double value){rpmGauge->setValue(value);});
     
     auto cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht1Gauge->setValueRange(0, 500);
     cht1Gauge->setNumMajorTicks(3);
+    m_updater.link("cht1", [=](double value){cht1Gauge->setValue(value);});
 
     auto cht2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht2Gauge->setValueRange(0, 500);
     cht2Gauge->setNumMajorTicks(3);
+    m_updater.link("cht2", [=](double value){cht2Gauge->setValue(value);});
 
     auto cht3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht3Gauge->setValueRange(0, 500);
     cht3Gauge->setNumMajorTicks(3);
+    m_updater.link("cht3", [=](double value){cht3Gauge->setValue(value);});
 
     auto cht4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht4Gauge->setValueRange(0, 500);
     cht4Gauge->setNumMajorTicks(3);
+    m_updater.link("cht4", [=](double value){cht4Gauge->setValue(value);});
     
     auto chtLayout = new QVBoxLayout;
     chtLayout->setSpacing(0);
@@ -165,7 +181,9 @@ MainWindow::MainWindow(QWidget *parent) :
     oilPressGauge->setNumMajorTicks(5);
     oilPressGauge->setValueLabelPos(120, 220);
     oilPressGauge->setTextColor(QColor("white"));
-    
+    m_updater.link("oil pressure",
+                   [=](double value){oilPressGauge->setValue(value);});
+ 
     auto column1Layout = new QVBoxLayout;
     column1Layout->addWidget(rpmGauge);
     column1Layout->addWidget(chtGroupBox);
@@ -177,22 +195,28 @@ MainWindow::MainWindow(QWidget *parent) :
     mapGauge->setNumMajorTicks(5);
     mapGauge->setValueLabelPos(120, 220);
     mapGauge->setTextColor(QColor("white"));
+    m_updater.link("manifold pressure",
+                   [=](double value){mapGauge->setValue(value);});
     
     auto egt1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt1Gauge->setValueRange(0, 500);
     egt1Gauge->setNumMajorTicks(3);
+    m_updater.link("egt1", [=](double value){egt1Gauge->setValue(value);});
 
     auto egt2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt2Gauge->setValueRange(0, 500);
     egt2Gauge->setNumMajorTicks(3);
+    m_updater.link("egt2", [=](double value){egt2Gauge->setValue(value);});
 
     auto egt3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt3Gauge->setValueRange(0, 500);
     egt3Gauge->setNumMajorTicks(3);
+    m_updater.link("egt3", [=](double value){egt3Gauge->setValue(value);});
 
     auto egt4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt4Gauge->setValueRange(0, 500);
     egt4Gauge->setNumMajorTicks(3);
+    m_updater.link("egt4", [=](double value){egt4Gauge->setValue(value);});
     
     auto egtLayout = new QVBoxLayout;
     egtLayout->setSpacing(0);
@@ -211,6 +235,8 @@ MainWindow::MainWindow(QWidget *parent) :
     oilTempGauge->setNumMajorTicks(5);
     oilTempGauge->setValueLabelPos(120, 220);
     oilTempGauge->setTextColor(QColor("white"));
+    m_updater.link("oil temperature",
+                   [=](double value){oilTempGauge->setValue(value);});
     
     auto column2Layout = new QVBoxLayout;
     column2Layout->addWidget(mapGauge);
@@ -223,25 +249,32 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelPressGauge->setNumMajorTicks(5);
     fuelPressGauge->setValueLabelPos(120, 220);
     fuelPressGauge->setTextColor(QColor("white"));
+    m_updater.link("fuel pressure",
+                   [=](double value){fuelPressGauge->setValue(value);});
 
-    auto fuelLevelAGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    fuelLevelAGauge->setValueRange(0, 200);
-    fuelLevelAGauge->setAngleRange(-90, 90);
-    fuelLevelAGauge->setNumMajorTicks(5);
-    fuelLevelAGauge->setValueLabelPos(120, 220);
-    fuelLevelAGauge->setTextColor(QColor("white"));
+    auto fuelLevel1Gauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    fuelLevel1Gauge->setValueRange(0, 200);
+    fuelLevel1Gauge->setAngleRange(-90, 90);
+    fuelLevel1Gauge->setNumMajorTicks(5);
+    fuelLevel1Gauge->setValueLabelPos(120, 220);
+    fuelLevel1Gauge->setTextColor(QColor("white"));
+    m_updater.link("fuel level 1",
+                   [=](double value){fuelLevel1Gauge->setValue(value);});
 
-    auto fuelLevelBGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    fuelLevelBGauge->setValueRange(0, 200);
-    fuelLevelBGauge->setAngleRange(-90, 90);
-    fuelLevelBGauge->setNumMajorTicks(5);
-    fuelLevelBGauge->setValueLabelPos(120, 220);
-    fuelLevelBGauge->setTextColor(QColor("white"));
+
+    auto fuelLevel2Gauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    fuelLevel2Gauge->setValueRange(0, 200);
+    fuelLevel2Gauge->setAngleRange(-90, 90);
+    fuelLevel2Gauge->setNumMajorTicks(5);
+    fuelLevel2Gauge->setValueLabelPos(120, 220);
+    fuelLevel2Gauge->setTextColor(QColor("white"));
+    m_updater.link("fuel level 2",
+                   [=](double value){fuelLevel2Gauge->setValue(value);});
     
     auto column3Layout = new QVBoxLayout;
     column3Layout->addWidget(fuelPressGauge);
-    column3Layout->addWidget(fuelLevelAGauge);
-    column3Layout->addWidget(fuelLevelBGauge);
+    column3Layout->addWidget(fuelLevel1Gauge);
+    column3Layout->addWidget(fuelLevel2Gauge);
     
     auto mainLayout = new QHBoxLayout;
     mainLayout->addItem(column1Layout);
@@ -253,12 +286,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(centralWidget);
     
     setWindowTitle(tr("Telemetry"));
-    
-    /*
-    m_emsStream = new EmsStream("/dev/ttyUSB0");
-    connect(m_emsStream, SIGNAL(variableUpdated(const TelemetryVariable &)),
-            &m_updater, SLOT(update(const TelemetryVariable &)));
-    */
 }
 
 

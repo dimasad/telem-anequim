@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="304.00766"
+   height="52.275673"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="horizontal-gauge.svg">
+  <defs
+     id="defs19" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1024"
+     id="namedview17"
+     showgrid="false"
+     inkscape:zoom="4.1308882"
+     inkscape:cx="165.72688"
+     inkscape:cy="61.399034"
+     inkscape:window-x="-2"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <metadata
+     id="metadata3044">image/svg+xmlimage/svg+xml<rdf:RDF>
+  <cc:Work
+     rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type
+       rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+  </cc:Work>
+</rdf:RDF>
+</metadata>
+  <g
+     id="g5">
+    <title
+       id="title7">Layer 1</title>
+    <g
+       id="background">
+      <rect
+         fill="#453e3e"
+         stroke="#000000"
+         stroke-width="4.198847"
+         stroke-dashoffset="0"
+         id="rect2936"
+         width="299.80884"
+         height="48.076828"
+         x="2.099424"
+         y="2.099424"
+         stroke-miterlimit="10" />
+      <rect
+         fill="#332d2d"
+         id="cursorRange"
+         width="230.07912"
+         height="14.04318"
+         x="14.765288"
+         y="10.817204" />
+    </g>
+    <g
+       id="info">
+      <path
+         fill="none"
+         stroke="#ffffff"
+         stroke-width="3.161597"
+         stroke-linecap="square"
+         stroke-miterlimit="4"
+         id="majorTick"
+         d="m14.360306,12.442249l0,10.81283" />
+      <path
+         fill="none"
+         stroke="#ffffff"
+         stroke-width="1.580798"
+         stroke-miterlimit="4"
+         d="m14.340652,13.358438l0.039307,9.116159"
+         id="minorTick" />
+    </g>
+    <rect
+       fill="none"
+       id="foreground"
+       width="127.14286"
+       height="15.18855"
+       x="84.149681"
+       y="19.091011"
+       rx="9.999999"
+       ry="10" />
+  </g>
+  <path
+     sodipodi:type="star"
+     style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.18334436;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
+     id="cursor"
+     sodipodi:sides="3"
+     sodipodi:cx="117.25521"
+     sodipodi:cy="-40.501438"
+     sodipodi:r1="21.133068"
+     sodipodi:r2="10.566534"
+     sodipodi:arg1="0.52359878"
+     sodipodi:arg2="1.5707963"
+     inkscape:flatsided="true"
+     inkscape:rounded="0"
+     inkscape:randomized="0"
+     d="m 135.55698,-29.934904 -36.603543,0 18.301773,-31.699602 z"
+     inkscape:transform-center-y="3.1721028"
+     transform="matrix(0.39205857,0,0,-0.60040553,19.431658,-9.0023913)" />
+</svg>

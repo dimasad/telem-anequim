@@ -14,16 +14,16 @@
 void
 GaugeUpdater::update(const TelemetryVariable &var)
 {
-    for (auto gauge : m_gauges.values(var.label)) {
-        gauge->setValue(var.value);
+    for (auto &updater: m_updaters.values(var.label)) {
+        updater(var.value);
     }
 }
 
 
 void
-GaugeUpdater::link(const QString &label, Gauge *gauge)
+GaugeUpdater::link(const QString &label, updater updater)
 {
-    m_gauges.insertMulti(label, gauge);
+    m_updaters.insertMulti(label, updater);
 }
 
 
@@ -133,31 +133,14 @@ MainWindow::MainWindow(QWidget *parent) :
     //angularGauge->addLabel(u8"Oil temperature (\u00B0F)", 120, 200);
     //m_updater.link("oil temperature", angularGauge);
 
-    auto *cht1Gauge = new HorizontalLinearGauge;
-    cht1Gauge->setValueLimits(0, 500);
-    cht1Gauge->setNumMajorTicks(6);
-    m_updater.link("cht1", cht1Gauge);
-
-    auto *cht2Gauge = new HorizontalLinearGauge;
-    cht2Gauge->setValueLimits(0, 500);
-    cht2Gauge->setNumMajorTicks(6);
-    m_updater.link("cht2", cht2Gauge);
-    
-    auto *cht3Gauge = new HorizontalLinearGauge;
-    cht3Gauge->setValueLimits(0, 500);
-    cht3Gauge->setNumMajorTicks(6);
-    m_updater.link("cht3", cht3Gauge);
-
-    auto *cht4Gauge = new HorizontalLinearGauge;
-    cht4Gauge->setValueLimits(0, 500);
-    cht4Gauge->setNumMajorTicks(6);
-    m_updater.link("cht4", cht4Gauge);
+    auto *cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
+    cht1Gauge->setValueRange(0, 500);
+    cht1Gauge->setNumMajorTicks(3);
+    cht1Gauge->setValue(250);
+    //m_updater.link("cht1", cht1Gauge);
     
     auto *chtLayout = new QVBoxLayout;
     chtLayout->addWidget(cht1Gauge);
-    chtLayout->addWidget(cht2Gauge);
-    chtLayout->addWidget(cht3Gauge);
-    chtLayout->addWidget(cht4Gauge);
     
     auto *mainLayout = new QHBoxLayout;
     mainLayout->addWidget(angularGauge);

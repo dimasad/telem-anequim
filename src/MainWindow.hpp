@@ -11,6 +11,8 @@
 #include <QMap>
 #include <QSettings>
 
+#include <functional>
+
 
 /* TODO:
  * - Prevent settings dialog from allowing user to select both streams on
@@ -26,10 +28,11 @@ public slots:
     void update(const TelemetryVariable &var);
 
 public:
-    void link(const QString &label, Gauge *gauge);
+    typedef std::function<void(double)> updater;
+    void link(const QString &label, updater updater);
     
 private:
-    QMap<QString, Gauge*> m_gauges;
+    QMap<QString, updater> m_updaters;
 };
 
 

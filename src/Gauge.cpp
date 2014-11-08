@@ -11,7 +11,7 @@
 
 typedef enum {
     AnchorTop, AnchorBottom, AnchorLeft, AnchorRight,
-    AnchorTopLeft, AnchorTopRight, AnchorBottomLeft, AnchorBottomRight
+    AnchorTopLeft, AnchorTopRight, AnchorBottomLeft, AnchorBottomRight, AnchorCenter
 } AnchorPoint;
 
 static QPointF bottomCenter(const QRectF &rect);
@@ -29,7 +29,7 @@ SvgGauge::SvgGauge(const QString &svgFile, QWidget *parent) :
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setSceneRect(m_renderer.viewBoxF());
-    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
 
@@ -110,10 +110,25 @@ AngularSvgGauge::AngularSvgGauge(const QString &svgFile, QWidget *parent) :
     TickedSvgGauge(svgFile, parent)
 {
     m_pivot = m_renderer.boundsOnElement("pivot").center();
+    auto rangeBandTemplate = m_renderer.boundsOnElement("rangeBand");
+    m_rangeBandInnerRadius = rangeBandTemplate.bottom() - m_pivot.y();
+    m_rangeBandOuterRadius = rangeBandTemplate.top() - m_pivot.y();
     
     m_background = addItemFromElement("background", BackgroundLayer);
     m_needle = addItemFromElement("needle", NeedleLayer);
     m_foreground = addItemFromElement("foreground", ForegroundLayer);
+}
+
+
+void
+AngularSvgGauge::addLabel(const QString &text, double x, double y)
+{
+    auto label = new QGraphicsSimpleTextItem(text);
+    label->setBrush(m_textColor);
+    anchorItem(label, AnchorCenter,QPointF (x,y));
+    label->setZValue(InfoLayer);
+    m_textLabels.append(label);
+    scene()->addItem(label);
 }
 
 
@@ -124,16 +139,13 @@ AngularSvgGauge::addRangeBand(const QColor &color,
     Q_ASSERT(startValue <= endValue);
     
     double startAngle = -valueToAngle(startValue) - 90;
-    double endAngle = -valueToAngle(endValue) - 90;
-    
-    double outerRadius = (m_renderer.boundsOnElement("minorTick").top() - 
-                          m_pivot.y());
-    double innerRadius = (m_renderer.boundsOnElement("minorTick").bottom() - 
-                          m_pivot.y());
-    QRectF outerRect(m_pivot.x() - outerRadius, m_pivot.y() - outerRadius,
-                     2 * outerRadius, 2 * outerRadius);
-    QRectF innerRect(m_pivot.x() - innerRadius, m_pivot.y() - innerRadius,
-                     2 * innerRadius, 2 * innerRadius);
+    double endAngle = -valueToAngle(endValue) - 90;        
+    QRectF innerRect(m_pivot.x() - m_rangeBandInnerRadius,
+                     m_pivot.y() - m_rangeBandInnerRadius,
+                     2 * m_rangeBandInnerRadius, 2 * m_rangeBandInnerRadius);
+    QRectF outerRect(m_pivot.x() - m_rangeBandOuterRadius,
+                     m_pivot.y() - m_rangeBandOuterRadius,
+                     2 * m_rangeBandOuterRadius, 2 * m_rangeBandOuterRadius);
     
     QPainterPath path(m_pivot);
     path.arcTo(outerRect, startAngle, endAngle - startAngle);
@@ -375,6 +387,10 @@ anchorItem(QGraphicsItem *item, AnchorPoint anchor,
     case AnchorBottomRight:
         item->setX(mappedPosition.x() - sceneBoundingRect.width());
         item->setY(mappedPosition.y() - sceneBoundingRect.height());
+        break;
+    case AnchorCenter:
+        item->setX(mappedPosition.x() - sceneBoundingRect.width()/2);
+        item->setY(mappedPosition.y() - sceneBoundingRect.height()/2);
         break;
     }
 }

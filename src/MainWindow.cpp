@@ -137,34 +137,55 @@ MainWindow::MainWindow(QWidget *parent) :
     mainToolBar->addAction(showSettings);
     
     auto rpmGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    rpmGauge->setValueRange(0, 200);
-    rpmGauge->setAngleRange(-90, 90);
-    rpmGauge->setNumMajorTicks(5);
-    rpmGauge->setValueLabelPos(120, 220);
+    rpmGauge->setValueRange(0, 3500);
+    rpmGauge->setAngleRange(-135, 90);
+    rpmGauge->setNumMajorTicks(8);
+    rpmGauge->setValueLabelPos(152, 220);
     rpmGauge->setTextColor(QColor("white"));
-    rpmGauge->addRangeBand(QColor("darkred"), 100, 200);
+    rpmGauge->addRangeBand(QColor("darkgreen"), 600, 2700);
+    rpmGauge->addRangeBand(QColor("yellow"), 2700, 3200);
+    rpmGauge->addRangeBand(QColor("darkred"), 3200, 3500);
+    rpmGauge->addLabel("RPM", 152, 200);
     m_updater.link("RPM", [=](double value){rpmGauge->setValue(value);});
     
     auto cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    cht1Gauge->setValueRange(0, 500);
-    cht1Gauge->setNumMajorTicks(3);
-    cht1Gauge->addRangeBand(QColor("yellowgreen"), 0, 250);
-    cht1Gauge->addRangeBand(QColor("darkred"), 400, 500);
+    cht1Gauge->setValueRange(150, 500);
+    cht1Gauge->setNumMajorTicks(8);
+    cht1Gauge->addRangeBand(QColor("darkred"), 0, 150);
+    cht1Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht1Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
+    cht1Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht1Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht1", [=](double value){cht1Gauge->setValue(value);});
 
     auto cht2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    cht2Gauge->setValueRange(0, 500);
-    cht2Gauge->setNumMajorTicks(3);
+    cht2Gauge->setValueRange(150, 500);
+    cht2Gauge->setNumMajorTicks(8);
+    cht2Gauge->addRangeBand(QColor("darkred"), 0, 150);
+    cht2Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht2Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
+    cht2Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht2Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht2", [=](double value){cht2Gauge->setValue(value);});
 
     auto cht3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    cht3Gauge->setValueRange(0, 500);
-    cht3Gauge->setNumMajorTicks(3);
+    cht3Gauge->setValueRange(150, 500);
+    cht3Gauge->setNumMajorTicks(8);
+    cht3Gauge->addRangeBand(QColor("darkred"), 0, 150);
+    cht3Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht3Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
+    cht3Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht3Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht3", [=](double value){cht3Gauge->setValue(value);});
 
     auto cht4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    cht4Gauge->setValueRange(0, 500);
-    cht4Gauge->setNumMajorTicks(3);
+    cht4Gauge->setValueRange(150, 500);
+    cht4Gauge->setNumMajorTicks(8);
+    cht4Gauge->addRangeBand(QColor("darkred"), 0, 150);
+    cht4Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht4Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
+    cht4Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht4Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht4", [=](double value){cht4Gauge->setValue(value);});
     
     auto chtLayout = new QVBoxLayout;
@@ -179,46 +200,59 @@ MainWindow::MainWindow(QWidget *parent) :
     chtGroupBox->setLayout(chtLayout);
 
     auto oilPressGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    oilPressGauge->setValueRange(0, 200);
-    oilPressGauge->setAngleRange(-90, 90);
-    oilPressGauge->setNumMajorTicks(5);
-    oilPressGauge->setValueLabelPos(120, 220);
+    oilPressGauge->setValueRange(0, 100);
+    oilPressGauge->setAngleRange(-135, 90);
+    oilPressGauge->setNumMajorTicks(11);
+    oilPressGauge->addRangeBand(QColor("darkred"), 0, 15);
+    oilPressGauge->addRangeBand(QColor("yellow"), 15, 20);
+    oilPressGauge->addRangeBand(QColor("darkgreen"), 20, 90);
+    oilPressGauge->addRangeBand(QColor("yellow"), 90, 95);
+    oilPressGauge->addRangeBand(QColor("darkred"), 95, 100);
+    oilPressGauge->setValueLabelPos(152, 220);
     oilPressGauge->setTextColor(QColor("white"));
+    oilPressGauge->addLabel("Oil pressure (psi)", 152, 200);
     m_updater.link("oil pressure",
                    [=](double value){oilPressGauge->setValue(value);});
  
-    auto column1Layout = new QVBoxLayout;
-    column1Layout->addWidget(rpmGauge);
-    column1Layout->addWidget(chtGroupBox);
-    column1Layout->addWidget(oilPressGauge);
- 
     auto mapGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    mapGauge->setValueRange(0, 200);
-    mapGauge->setAngleRange(-90, 90);
-    mapGauge->setNumMajorTicks(5);
-    mapGauge->setValueLabelPos(120, 220);
+    mapGauge->setValueRange(0, 40);
+    mapGauge->setAngleRange(-135, 90);
+    mapGauge->setNumMajorTicks(11);
+    mapGauge->addRangeBand(QColor("darkgreen"), 0, 36);
+    mapGauge->addRangeBand(QColor("yellow"), 36, 38);
+    mapGauge->addRangeBand(QColor("darkred"), 38, 40);
+    mapGauge->setValueLabelPos(152, 220);
     mapGauge->setTextColor(QColor("white"));
+    mapGauge->addLabel("MAP (inHg)", 152, 200);
     m_updater.link("manifold pressure",
                    [=](double value){mapGauge->setValue(value);});
     
     auto egt1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    egt1Gauge->setValueRange(0, 500);
-    egt1Gauge->setNumMajorTicks(3);
+    egt1Gauge->setValueRange(800, 1600);
+    egt1Gauge->setNumMajorTicks(6);
+    egt1Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
+    egt1Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt1", [=](double value){egt1Gauge->setValue(value);});
 
     auto egt2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    egt2Gauge->setValueRange(0, 500);
-    egt2Gauge->setNumMajorTicks(3);
+    egt2Gauge->setValueRange(800, 1600);
+    egt2Gauge->setNumMajorTicks(6);
+    egt2Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
+    egt2Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt2", [=](double value){egt2Gauge->setValue(value);});
 
     auto egt3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    egt3Gauge->setValueRange(0, 500);
-    egt3Gauge->setNumMajorTicks(3);
+    egt3Gauge->setValueRange(800, 1600);
+    egt3Gauge->setNumMajorTicks(6);
+    egt3Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
+    egt3Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt3", [=](double value){egt3Gauge->setValue(value);});
 
     auto egt4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
-    egt4Gauge->setValueRange(0, 500);
-    egt4Gauge->setNumMajorTicks(3);
+    egt4Gauge->setValueRange(800, 1600);
+    egt4Gauge->setNumMajorTicks(6);
+    egt4Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
+    egt4Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt4", [=](double value){egt4Gauge->setValue(value);});
     
     auto egtLayout = new QVBoxLayout;
@@ -233,56 +267,148 @@ MainWindow::MainWindow(QWidget *parent) :
     egtGroupBox->setLayout(egtLayout);
 
     auto oilTempGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    oilTempGauge->setValueRange(0, 200);
-    oilTempGauge->setAngleRange(-90, 90);
-    oilTempGauge->setNumMajorTicks(5);
-    oilTempGauge->setValueLabelPos(120, 220);
+    oilTempGauge->setValueRange(60, 260);
+    oilTempGauge->setAngleRange(-135, 90);
+    oilTempGauge->setNumMajorTicks(11);
+    oilTempGauge->addRangeBand(QColor("yellow"), 60, 100);
+    oilTempGauge->addRangeBand(QColor("darkgreen"), 100, 220);
+    oilTempGauge->addRangeBand(QColor("yellow"), 220, 240);
+    oilTempGauge->addRangeBand(QColor("darkred"), 240, 260);
+    oilTempGauge->setValueLabelPos(152, 220);
     oilTempGauge->setTextColor(QColor("white"));
+    oilTempGauge->addLabel("Oil temperature (\u00B0F)", 152, 200);
     m_updater.link("oil temperature",
                    [=](double value){oilTempGauge->setValue(value);});
     
-    auto column2Layout = new QVBoxLayout;
-    column2Layout->addWidget(mapGauge);
-    column2Layout->addWidget(egtGroupBox);
-    column2Layout->addWidget(oilTempGauge);
-
     auto fuelPressGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    fuelPressGauge->setValueRange(0, 200);
-    fuelPressGauge->setAngleRange(-90, 90);
-    fuelPressGauge->setNumMajorTicks(5);
-    fuelPressGauge->setValueLabelPos(120, 220);
+    fuelPressGauge->setValueRange(0, 30);
+    fuelPressGauge->setAngleRange(-135, 90);
+    fuelPressGauge->setNumMajorTicks(7);
+    fuelPressGauge->addRangeBand(QColor("darkred"), 0, 10);
+    fuelPressGauge->addRangeBand(QColor("yellow"), 10, 15);
+    fuelPressGauge->addRangeBand(QColor("darkgreen"), 15, 27);
+    fuelPressGauge->addRangeBand(QColor("yellow"), 27, 28);
+    fuelPressGauge->addRangeBand(QColor("darkred"), 28, 30);
+    fuelPressGauge->setValueLabelPos(152, 220);
     fuelPressGauge->setTextColor(QColor("white"));
+    fuelPressGauge->addLabel("Fuel pressure (psi)", 152, 200);
     m_updater.link("fuel pressure",
                    [=](double value){fuelPressGauge->setValue(value);});
 
     auto fuelLevel1Gauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    fuelLevel1Gauge->setValueRange(0, 200);
-    fuelLevel1Gauge->setAngleRange(-90, 90);
-    fuelLevel1Gauge->setNumMajorTicks(5);
-    fuelLevel1Gauge->setValueLabelPos(120, 220);
+    fuelLevel1Gauge->setValueRange(0, 24);
+    fuelLevel1Gauge->setAngleRange(-135, 90);
+    fuelLevel1Gauge->setNumMajorTicks(7);
+    fuelLevel1Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
+    fuelLevel1Gauge->addRangeBand(QColor("yellow"), 1.3, 1.5);
+    fuelLevel1Gauge->addRangeBand(QColor("darkgreen"), 1.5, 24);
+    fuelLevel1Gauge->setValueLabelPos(152, 220);
     fuelLevel1Gauge->setTextColor(QColor("white"));
+    fuelLevel1Gauge->addLabel("Fuel level 1 (gal)", 152, 200);
     m_updater.link("fuel level 1",
                    [=](double value){fuelLevel1Gauge->setValue(value);});
 
 
     auto fuelLevel2Gauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    fuelLevel2Gauge->setValueRange(0, 200);
-    fuelLevel2Gauge->setAngleRange(-90, 90);
-    fuelLevel2Gauge->setNumMajorTicks(5);
-    fuelLevel2Gauge->setValueLabelPos(120, 220);
+    fuelLevel2Gauge->setValueRange(0, 4);
+    fuelLevel2Gauge->setAngleRange(-135, 90);
+    fuelLevel2Gauge->setNumMajorTicks(6);
+    fuelLevel2Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
+    fuelLevel2Gauge->addRangeBand(QColor("yellow"), 1.3, 1.5);
+    fuelLevel2Gauge->addRangeBand(QColor("darkgreen"), 1.5, 4);
+    fuelLevel2Gauge->setValueLabelPos(152, 220);
     fuelLevel2Gauge->setTextColor(QColor("white"));
+    fuelLevel2Gauge->addLabel("Fuel level 2 (gal)", 152, 200);
     m_updater.link("fuel level 2",
                    [=](double value){fuelLevel2Gauge->setValue(value);});
+
+    auto fuelFlowGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    fuelFlowGauge->setValueRange(0, 25);
+    fuelFlowGauge->setAngleRange(-135, 90);
+    fuelFlowGauge->setNumMajorTicks(5);
+    fuelFlowGauge->addRangeBand(QColor("darkgreen"), 0, 22);
+    fuelFlowGauge->addRangeBand(QColor("yellow"), 22, 25);
+    fuelFlowGauge->setValueLabelPos(152, 220);
+    fuelFlowGauge->setTextColor(QColor("white"));
+    fuelFlowGauge->addLabel("Fuel flow (gal/h)", 152, 200);
+    m_updater.link("fuel flow",
+                   [=](double value){fuelFlowGauge->setValue(value);});
+
+    auto lambdaGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    lambdaGauge->setValueRange(0, 100);
+    lambdaGauge->setAngleRange(-135, 90);
+    lambdaGauge->setNumMajorTicks(11);
+    lambdaGauge->addRangeBand(QColor("darkgreen"), 30, 35);
+    lambdaGauge->setValueLabelPos(152, 220);
+    lambdaGauge->setTextColor(QColor("white"));
+    lambdaGauge->addLabel("Lambda", 152, 200);
+    m_updater.link("aileron trim",
+                   [=](double value){lambdaGauge->setValue(value);});
     
+    auto altitudeGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    altitudeGauge->setValueRange(0, 10000);
+    altitudeGauge->setAngleRange(-135, 90);
+    altitudeGauge->setNumMajorTicks(11);
+    altitudeGauge->setValueLabelPos(152, 220);
+    altitudeGauge->setTextColor(QColor("white"));
+    altitudeGauge->addLabel("Altitude (ft)", 152, 200);
+    m_updater.link("displayed altitude",
+                   [=](double value){altitudeGauge->setValue(value*3.28084);});
+
+    auto airspeedGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    airspeedGauge->setValueRange(0, 400);
+    airspeedGauge->setAngleRange(-135, 90);
+    airspeedGauge->setNumMajorTicks(9);
+    airspeedGauge->addRangeBand(QColor("darkgreen"), 70, 180);
+    airspeedGauge->addRangeBand(QColor("yellow"), 180, 310);
+    airspeedGauge->addRangeBand(QColor("darkred"), 310, 350);
+    airspeedGauge->setValueLabelPos(152, 220);
+    airspeedGauge->setTextColor(QColor("white"));
+    airspeedGauge->addLabel("Airspeed (kt)", 152, 200);
+    m_updater.link("airspeed",
+                   [=](double value){airspeedGauge->setValue(value*1.94384449);});
+
+
+    auto climbrateGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    climbrateGauge->setValueRange(-4000, 4000);
+    climbrateGauge->setAngleRange(-135, 135);
+    climbrateGauge->setNumMajorTicks(9);
+    climbrateGauge->setValueLabelPos(152, 220);
+    climbrateGauge->setTextColor(QColor("white"));
+    climbrateGauge->addLabel("Climb Rate (fpm)", 152, 200);
+    m_updater.link("vertical speed",
+                   [=](double value){climbrateGauge->setValue(value*60);});
+
+    auto column1Layout = new QVBoxLayout;
+    column1Layout->addWidget(chtGroupBox);
+    column1Layout->addWidget(egtGroupBox);
+
+    auto column2Layout = new QVBoxLayout;
+    column2Layout->addWidget(mapGauge);
+    column2Layout->addWidget(oilTempGauge);
+    column2Layout->addWidget(fuelLevel1Gauge);
+
     auto column3Layout = new QVBoxLayout;
-    column3Layout->addWidget(fuelPressGauge);
-    column3Layout->addWidget(fuelLevel1Gauge);
+    column3Layout->addWidget(rpmGauge);
+    column3Layout->addWidget(oilPressGauge);
     column3Layout->addWidget(fuelLevel2Gauge);
-    
+
+    auto column4Layout = new QVBoxLayout;
+    column4Layout->addWidget(fuelPressGauge);
+    column4Layout->addWidget(fuelFlowGauge);
+    column4Layout->addWidget(lambdaGauge);
+
+    auto column5Layout = new QVBoxLayout;
+    column5Layout->addWidget(altitudeGauge);
+    column5Layout->addWidget(airspeedGauge);
+    column5Layout->addWidget(climbrateGauge);
+
     auto mainLayout = new QHBoxLayout;
     mainLayout->addItem(column1Layout);
     mainLayout->addItem(column2Layout);
     mainLayout->addItem(column3Layout);
+    mainLayout->addItem(column4Layout);
+    mainLayout->addItem(column5Layout);
     
     QWidget *centralWidget = new QWidget;
     centralWidget->setLayout(mainLayout);

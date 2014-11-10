@@ -11,7 +11,8 @@
 
 typedef enum {
     AnchorTop, AnchorBottom, AnchorLeft, AnchorRight,
-    AnchorTopLeft, AnchorTopRight, AnchorBottomLeft, AnchorBottomRight, AnchorCenter
+    AnchorTopLeft, AnchorTopRight, AnchorBottomLeft, AnchorBottomRight,
+    AnchorCenter
 } AnchorPoint;
 
 static QPointF bottomCenter(const QRectF &rect);
@@ -139,7 +140,7 @@ AngularSvgGauge::addRangeBand(const QColor &color,
     Q_ASSERT(startValue <= endValue);
     
     double startAngle = -valueToAngle(startValue) - 90;
-    double endAngle = -valueToAngle(endValue) - 90;        
+    double endAngle = -valueToAngle(endValue) - 90;
     QRectF innerRect(m_pivot.x() - m_rangeBandInnerRadius,
                      m_pivot.y() - m_rangeBandInnerRadius,
                      2 * m_rangeBandInnerRadius, 2 * m_rangeBandInnerRadius);

@@ -12,6 +12,7 @@
 
 #include <QDebug>
 
+
 void
 GaugeUpdater::update(const TelemetryVariable &var)
 {
@@ -366,18 +367,18 @@ MainWindow::MainWindow(QWidget *parent) :
     airspeedGauge->setTextColor(QColor("white"));
     airspeedGauge->addLabel("Airspeed (kt)", 152, 200);
     m_updater.link("airspeed",
-                   [=](double value){airspeedGauge->setValue(value*1.94384449);});
+                   [=](double value){airspeedGauge->setValue(value*1.9438);});
 
 
-    auto climbrateGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
-    climbrateGauge->setValueRange(-4000, 4000);
-    climbrateGauge->setAngleRange(-135, 135);
-    climbrateGauge->setNumMajorTicks(9);
-    climbrateGauge->setValueLabelPos(152, 220);
-    climbrateGauge->setTextColor(QColor("white"));
-    climbrateGauge->addLabel("Climb Rate (fpm)", 152, 200);
+    auto climbRateGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    climbRateGauge->setValueRange(-4000, 4000);
+    climbRateGauge->setAngleRange(-135, 135);
+    climbRateGauge->setNumMajorTicks(9);
+    climbRateGauge->setValueLabelPos(152, 220);
+    climbRateGauge->setTextColor(QColor("white"));
+    climbRateGauge->addLabel("Climb Rate (fpm)", 152, 200);
     m_updater.link("vertical speed",
-                   [=](double value){climbrateGauge->setValue(value*60);});
+                   [=](double value){climbRateGauge->setValue(value*60);});
 
     auto column1Layout = new QVBoxLayout;
     column1Layout->addWidget(chtGroupBox);
@@ -401,7 +402,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto column5Layout = new QVBoxLayout;
     column5Layout->addWidget(altitudeGauge);
     column5Layout->addWidget(airspeedGauge);
-    column5Layout->addWidget(climbrateGauge);
+    column5Layout->addWidget(climbRateGauge);
 
     auto mainLayout = new QHBoxLayout;
     mainLayout->addItem(column1Layout);

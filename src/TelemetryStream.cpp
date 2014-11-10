@@ -22,7 +22,7 @@ TelemetryVariable::operator QString() const
 
 TelemetryStream::TelemetryStream(const QString &portName,
                                  int message_body_size, QObject *parent) :
-    QObject(parent), message_body_size(message_body_size)
+    QObject(parent), port(portName), message_body_size(message_body_size)
 {
     total_message_size = message_body_size + MESSAGE_FOOTER_SIZE;
 

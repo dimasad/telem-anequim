@@ -1,7 +1,10 @@
 #include "TelemetryStream.hpp"
 
-#include <cmath>
+#include <QVector>
 #include <QDebug>
+
+#include <cmath>
+#include <string>
 
 
 #define EMS_MESSAGE_BODY_SIZE 119
@@ -27,9 +30,29 @@ TelemetryStream::TelemetryStream(const QString &portName,
     total_message_size = message_body_size + MESSAGE_FOOTER_SIZE;
 
     setPort(portName);
-    port.setBaudRate(QSerialPort::Baud115200);
-    port.setReadBufferSize(total_message_size);
     connect(&port, SIGNAL(readyRead()), this, SLOT(triggerRead()));
+}
+
+
+void
+TelemetryStream::startLogging(const QString &logFileName)
+{
+    m_logFile = new QFile(logFileName, this);
+    m_logFile->open(QIODevice::ReadOnly | QIODevice::Text);
+}
+
+
+void
+TelemetryStream::stopLogging()
+{
+    delete m_logFile;
+}
+
+
+bool
+TelemetryStream::isLoggingOn()
+{
+    return m_logFile != 0;
 }
 
 
@@ -60,6 +83,9 @@ TelemetryStream::triggerRead()
     TelemetryMessage msg = parseMessage(line);
     for (TelemetryMessage::iterator i = msg.begin(); i != msg.end(); i++)
 	emit variableUpdated(*i);
+
+    if (isLoggingOn())
+        logMessage(msg);
 }
 
 
@@ -74,6 +100,34 @@ TelemetryStream::setPort(const QString &portName)
     
     port.setPortName(portName);
     port.open(QIODevice::ReadOnly);
+    port.setBaudRate(QSerialPort::Baud115200);
+    port.setReadBufferSize(total_message_size);
+}
+
+
+void
+TelemetryStream::includeInLog(const QString &variableName)
+{
+    m_logVariables.insert(variableName, m_logVariables.size());
+}
+
+
+void
+TelemetryStream::logMessage(const TelemetryMessage &message)
+{
+    QVector<double> data(m_logVariables.size(), NAN);
+    
+    for (const auto &variable: message) {
+        auto indexIterator = m_logVariables.find(variable.label);
+        if (indexIterator != m_logVariables.end())
+            data[*indexIterator] = variable.value;
+    }
+    
+    for (auto datum: data) {
+        m_logFile->write(std::to_string(datum).c_str());
+        m_logFile->write("\t");
+    }
+    m_logFile->write("\n");
 }
 
 
@@ -166,6 +220,7 @@ EmsStream::parseGeneralPurpose(int & cursor, const QByteArray & body,
     
     return true;
 }
+
 
 bool
 EmsStream::messageValid(quint8 checksum, const QByteArray & payload)
@@ -402,3 +457,12 @@ TelemetryDump::printVariable(const TelemetryVariable & var)
 {
     stream << (QString) var << endl;
 }
+
+/***** EMS
+"hour""minute""second""millisecond""manifold pressure""oil temperature""oil pressure""fuel pressure""voltage""current""RPM""fuel flow""remaining fuel""fuel level 1""fuel level 2""general purpose thermocouple""egt1""egt2""egt3""egt4""egt5""egt6""cht1""cht2""cht3""cht4""cht5""cht6""contact 1""contact 2"
+****/
+
+
+/****** EFIS
+"hour""minute""second""millisecond""pitch""roll""yaw""airspeed""lateral acceleration""vertical acceleration""angle of attack""pressure altitude""turn rate""displayed altitude""vertical speed"
+****/

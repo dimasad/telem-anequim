@@ -2,6 +2,7 @@
 #define TELEMETRYSTREAM_HPP
 
 #include <QtSerialPort/QSerialPort>
+#include <QFile>
 #include <QList>
 #include <QTime>
 #include <QTextStream>
@@ -29,17 +30,24 @@ class TelemetryStream : public QObject
     Q_OBJECT
     
 public:
-    TelemetryStream(const QString & portName, int message_body_size,
+    TelemetryStream(const QString &portName, int message_body_size,
                     QObject *parent=0);
-    
+    void startLogging(const QString &logFileName);
+    void stopLogging();
+    bool isLoggingOn();
+
 protected:
     QSerialPort port;
     int message_body_size, total_message_size;
+    QFile *m_logFile = 0;
+    QMap<QString, unsigned> m_logVariables;
+
+    void includeInLog(const QString &variableName);
+    void logMessage(const TelemetryMessage &message);
     double parseDouble(int & cursor, unsigned len, const QByteArray & body);
     long parseHex(int & cursor, unsigned len, const QByteArray & body);
     virtual bool messageValid(quint8 checksum, const QByteArray & payload) = 0;
     virtual TelemetryMessage parseMessage(const QByteArray & body) = 0;
-
 
 public slots:
     void setPort(const QString &portName);

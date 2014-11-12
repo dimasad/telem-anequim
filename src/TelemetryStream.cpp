@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QDebug>
 
+#include <algorithm>
 #include <cmath>
 #include <string>
 
@@ -39,6 +40,18 @@ TelemetryStream::startLogging(const QString &logFileName)
 {
     m_logFile = new QFile(logFileName, this);
     m_logFile->open(QIODevice::ReadOnly | QIODevice::Text);
+    
+    auto variableNames = m_logVariables.keys();
+    auto comp = [&](const QString &a, const QString &b){
+        return m_logVariables[a] < m_logVariables[b];
+    };
+    std::sort(variableNames.begin(), variableNames.end(), comp);
+    
+    m_logFile->write("%");
+    for (const auto &name: variableNames) {
+        m_logFile->write(name.toUtf8());
+        m_logFile->write("\t");
+    }
 }
 
 
@@ -159,6 +172,36 @@ TelemetryStream::parseHex(int & cursor, unsigned len, const QByteArray & body)
 EmsStream::EmsStream(const QString & portName, QObject *parent) :
     TelemetryStream(portName, EMS_MESSAGE_BODY_SIZE, parent)
 {
+    includeInLog("hour");
+    includeInLog("minute");
+    includeInLog("second");
+    includeInLog("millisecond");
+    includeInLog("manifold pressure");
+    includeInLog("oil temperature");
+    includeInLog("oil pressure");
+    includeInLog("fuel pressure");
+    includeInLog("voltage");
+    includeInLog("current");
+    includeInLog("RPM");
+    includeInLog("fuel flow");
+    includeInLog("remaining fuel");
+    includeInLog("fuel level 1");
+    includeInLog("fuel level 2");
+    includeInLog("general purpose thermocouple");
+    includeInLog("egt1");
+    includeInLog("egt2");
+    includeInLog("egt3");
+    includeInLog("egt4");
+    includeInLog("egt5");
+    includeInLog("egt6");
+    includeInLog("cht1");
+    includeInLog("cht2");
+    includeInLog("cht3");
+    includeInLog("cht4");
+    includeInLog("cht5");
+    includeInLog("cht6");
+    includeInLog("contact 1");
+    includeInLog("contact 2");
 }
 
 
@@ -359,6 +402,21 @@ EmsStream::parseMessage(const QByteArray & body)
 EfisStream::EfisStream(const QString & portName, QObject *parent) :
     TelemetryStream(portName, EFIS_MESSAGE_BODY_SIZE, parent)
 {
+    includeInLog("hour");
+    includeInLog("minute");
+    includeInLog("second");
+    includeInLog("millisecond");
+    includeInLog("pitch");
+    includeInLog("roll");
+    includeInLog("yaw");
+    includeInLog("airspeed");
+    includeInLog("lateral acceleration");
+    includeInLog("vertical acceleration");
+    includeInLog("angle of attack");
+    includeInLog("pressure altitude");
+    includeInLog("turn rate");
+    includeInLog("displayed altitude");
+    includeInLog("vertical speed");
 }
 
 
@@ -457,12 +515,3 @@ TelemetryDump::printVariable(const TelemetryVariable & var)
 {
     stream << (QString) var << endl;
 }
-
-/***** EMS
-"hour""minute""second""millisecond""manifold pressure""oil temperature""oil pressure""fuel pressure""voltage""current""RPM""fuel flow""remaining fuel""fuel level 1""fuel level 2""general purpose thermocouple""egt1""egt2""egt3""egt4""egt5""egt6""cht1""cht2""cht3""cht4""cht5""cht6""contact 1""contact 2"
-****/
-
-
-/****** EFIS
-"hour""minute""second""millisecond""pitch""roll""yaw""airspeed""lateral acceleration""vertical acceleration""angle of attack""pressure altitude""turn rate""displayed altitude""vertical speed"
-****/

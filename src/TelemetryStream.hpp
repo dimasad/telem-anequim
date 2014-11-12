@@ -41,7 +41,7 @@ protected:
     int message_body_size, total_message_size;
     QFile *m_logFile = 0;
     QMap<QString, unsigned> m_logVariables;
-
+    
     void includeInLog(const QString &variableName);
     void logMessage(const TelemetryMessage &message);
     double parseDouble(int & cursor, unsigned len, const QByteArray & body);
@@ -67,6 +67,8 @@ public:
     bool parseGeneralPurpose(int & cursor, const QByteArray & body, 
                              TelemetryVariable & var);
     virtual bool messageValid(quint8 checksum, const QByteArray & payload);
+
+protected:
     virtual TelemetryMessage parseMessage(const QByteArray & body);
 };
 
@@ -78,6 +80,8 @@ class EfisStream : public TelemetryStream
 public:
     EfisStream(const QString &portName, QObject *parent=0);
     virtual bool messageValid(quint8 checksum, const QByteArray & payload);
+
+protected:
     virtual TelemetryMessage parseMessage(const QByteArray & body);
 };
 

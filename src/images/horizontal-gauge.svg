@@ -122,4 +122,11 @@
      height="23.239555"
      x="248.13066"
      y="9.6698236" />
+  <rect
+     style="fill:#ffff00;fill-opacity:1;stroke:none"
+     id="tickLabel"
+     width="29.513123"
+     height="16.082001"
+     x="6.9405975"
+     y="26.832863" />
 </svg>

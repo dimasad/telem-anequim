@@ -67,6 +67,14 @@ TickedSvgGauge::setNumMajorTicks(unsigned newNumMajorTicks)
 
 
 void
+TickedSvgGauge::setNumMinorTicks(unsigned newNumMinorTicks)
+{
+    m_numMinorTicks = newNumMinorTicks;
+    updateMinorTicks();
+}
+
+
+void
 TickedSvgGauge::setTextColor(const QColor &newColor)
 {
     m_textColor = newColor;
@@ -112,6 +120,29 @@ TickedSvgGauge::updateMajorTicks()
     double valueIncrement = valueRange / std::max(m_numMajorTicks - 1, 1u);
     for (unsigned i = 0; i < m_numMajorTicks; i++)
         placeMajorTick(m_valueMin + i * valueIncrement);
+
+    void updateMinorTicks();
+}
+
+
+void
+TickedSvgGauge::updateMinorTicks()
+{
+    for (auto minorTick: m_minorTicks)
+        delete minorTick;
+    m_majorTicks.clear();
+
+    if (m_numMinorTicks == 0 || m_numMajorTicks < 2)
+        return;
+
+    double majorRange = m_valueMax - m_valueMin;
+    double majorIncrement = majorRange / std::max(m_numMajorTicks - 1, 1u);
+    double minorIncrement = majorIncrement / (m_numMinorTicks + 1);
+    
+    for (unsigned i = 0; i < m_numMajorTicks; i++)
+        for (unsigned j = 0; j < m_numMinorTicks; j++)
+            placeMinorTick(m_valueMin + i * majorIncrement + 
+                           (j + 1) * minorIncrement);
 }
 
 
@@ -237,8 +268,13 @@ AngularSvgGauge::placeMajorTick(double value)
     tick->setRotation(angle);
     m_majorTicks.append(tick);
     
+    QRectF tickLabelRect = m_renderer.boundsOnElement("tickLabel");
+    QFont tickLabelFont;
+    tickLabelFont.setPixelSize(tickLabelRect.height());
+    
     auto *tickLabel = new QGraphicsSimpleTextItem();
     tickLabel->setText(QLocale().toString(value));
+    tickLabel->setFont(tickLabelFont);
     tickLabel->setBrush(m_textColor);
     tickLabel->setZValue(InfoLayer);
     scene()->addItem(tickLabel);
@@ -269,6 +305,17 @@ AngularSvgGauge::placeMajorTick(double value)
         QPointF anchorPoint = tick->sceneBoundingRect().topLeft();
         anchorItem(tickLabel, AnchorBottom, anchorPoint);
     }
+}
+
+
+void 
+AngularSvgGauge::placeMinorTick(double value)
+{
+    double angle = valueToAngle(value);
+
+    auto tick = addItemFromElement("minorTick", InfoLayer);
+    tick->setRotation(angle);
+    m_minorTicks.append(tick);
 }
 
 
@@ -348,7 +395,12 @@ LinearSvgGauge::placeMajorTick(double value)
     moveToPos(tick, pos);
     m_majorTicks.append(tick);
 
+    QRectF tickLabelRect = m_renderer.boundsOnElement("tickLabel");
+    QFont tickLabelFont;
+    tickLabelFont.setPixelSize(tickLabelRect.height());
+    
     QGraphicsSimpleTextItem *tickLabel = new QGraphicsSimpleTextItem();
+    tickLabel->setFont(tickLabelFont);
     tickLabel->setText(QLocale().toString(value));
     tickLabel->setBrush(QColor(m_textColor));
     tickLabel->setZValue(InfoLayer);
@@ -362,6 +414,16 @@ LinearSvgGauge::placeMajorTick(double value)
         anchorItem(tickLabel, AnchorTopRight, tickBoundingRect.bottomRight());
     else
         anchorItem(tickLabel, AnchorTop, bottomCenter(tickBoundingRect));
+}
+
+
+void
+LinearSvgGauge::placeMinorTick(double value)
+{
+    double pos = valueToPos(value);
+    auto tick = addItemFromElement("minorTick", InfoLayer);
+    moveToPos(tick, pos);
+    m_minorTicks.append(tick);
 }
 
 

@@ -35,24 +35,28 @@ class TickedSvgGauge : public SvgGauge
 public:
     using SvgGauge::SvgGauge;
     void setNumMajorTicks(unsigned newNumMajorTicks);
+    void setNumMinorTicks(unsigned newNumMinorTicks);
     void setTextColor(const QColor &newColor);
     void setValueLabelFormat(char f, int precision);
     void setValueRange(double valueMin, double valueMax);
     
 protected:
     double m_valueMin = 0, m_valueMax = 1;
-    unsigned m_numMajorTicks = 0;
+    unsigned m_numMajorTicks = 0, m_numMinorTicks = 0;
     int m_valueLabelPrecision = 8;
     char m_valueLabelFormat = 'g';
     QColor m_textColor = QColor("black");
     QList<QGraphicsSvgItem *> m_majorTicks;
+    QList<QGraphicsSvgItem *> m_minorTicks;
     QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
     QList<QGraphicsSimpleTextItem *> m_textLabels;
     QGraphicsSimpleTextItem *m_valueLabel = 0;
     
     void updateMajorTicks();
+    void updateMinorTicks();
     
     virtual void placeMajorTick(double value) = 0;
+    virtual void placeMinorTick(double value) = 0;
 };
 
 
@@ -83,6 +87,7 @@ protected:
     QGraphicsSimpleTextItem* addLabelFromElement(const QString &text,
                                                  const QString &elementId);
     void placeMajorTick(double value);
+    void placeMinorTick(double value);
     double valueToAngle(double value);    
 };
 
@@ -107,6 +112,7 @@ protected:
     
     void moveToPos(QGraphicsItem *item, double pos);
     void placeMajorTick(double value);
+    void placeMinorTick(double value);
     double valueToPos(double value);
 };
 

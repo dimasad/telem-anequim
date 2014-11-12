@@ -28,9 +28,9 @@
      inkscape:window-height="1024"
      id="namedview20"
      showgrid="false"
-     inkscape:zoom="3.2565963"
-     inkscape:cx="91.52187"
-     inkscape:cy="117.8901"
+     inkscape:zoom="9.2110453"
+     inkscape:cx="146.62114"
+     inkscape:cy="229.45926"
      inkscape:window-x="-2"
      inkscape:window-y="-3"
      inkscape:window-maximized="1"
@@ -137,4 +137,11 @@
      width="49.019699"
      id="valueLabel"
      style="fill:#ffff00;fill-opacity:1;stroke:none" />
+  <rect
+     style="fill:#ffff00;fill-opacity:1;stroke:none"
+     id="tickLabel"
+     width="29.513123"
+     height="16.082001"
+     x="137.25111"
+     y="40.895599" />
 </svg>

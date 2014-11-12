@@ -143,10 +143,9 @@ MainWindow::MainWindow(QWidget *parent) :
     rpmGauge->setNumMajorTicks(8);
     rpmGauge->setTextColor(QColor("white"));
     rpmGauge->addRangeBand(QColor("darkgreen"), 600, 2700);
-    rpmGauge->addRangeBand(QColor("yellow"), 2700, 3200);
+    rpmGauge->addRangeBand(QColor("goldenrod"), 2700, 3200);
     rpmGauge->addRangeBand(QColor("darkred"), 3200, 3500);
     rpmGauge->setBottomLabel("RPM");
-    rpmGauge->setValue(1234);
     m_updater.link("RPM", [=](double value){rpmGauge->setValue(value);});
     
     auto cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
@@ -154,9 +153,9 @@ MainWindow::MainWindow(QWidget *parent) :
     cht1Gauge->setNumMajorTicks(8);
     cht1Gauge->setTextColor(QColor("white"));
     cht1Gauge->addRangeBand(QColor("darkred"), 0, 150);
-    cht1Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht1Gauge->addRangeBand(QColor("goldenrod"), 150, 200);
     cht1Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
-    cht1Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht1Gauge->addRangeBand(QColor("goldenrod"), 435, 450);
     cht1Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht1", [=](double value){cht1Gauge->setValue(value);});
 
@@ -165,9 +164,9 @@ MainWindow::MainWindow(QWidget *parent) :
     cht2Gauge->setNumMajorTicks(8);
     cht2Gauge->setTextColor(QColor("white"));
     cht2Gauge->addRangeBand(QColor("darkred"), 0, 150);
-    cht2Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht2Gauge->addRangeBand(QColor("goldenrod"), 150, 200);
     cht2Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
-    cht2Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht2Gauge->addRangeBand(QColor("goldenrod"), 435, 450);
     cht2Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht2", [=](double value){cht2Gauge->setValue(value);});
 
@@ -176,9 +175,9 @@ MainWindow::MainWindow(QWidget *parent) :
     cht3Gauge->setNumMajorTicks(8);
     cht3Gauge->setTextColor(QColor("white"));
     cht3Gauge->addRangeBand(QColor("darkred"), 0, 150);
-    cht3Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht3Gauge->addRangeBand(QColor("goldenrod"), 150, 200);
     cht3Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
-    cht3Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht3Gauge->addRangeBand(QColor("goldenrod"), 435, 450);
     cht3Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht3", [=](double value){cht3Gauge->setValue(value);});
 
@@ -187,9 +186,9 @@ MainWindow::MainWindow(QWidget *parent) :
     cht4Gauge->setNumMajorTicks(8);
     cht4Gauge->setTextColor(QColor("white"));
     cht4Gauge->addRangeBand(QColor("darkred"), 0, 150);
-    cht4Gauge->addRangeBand(QColor("yellow"), 150, 200);
+    cht4Gauge->addRangeBand(QColor("goldenrod"), 150, 200);
     cht4Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
-    cht4Gauge->addRangeBand(QColor("yellow"), 435, 450);
+    cht4Gauge->addRangeBand(QColor("goldenrod"), 435, 450);
     cht4Gauge->addRangeBand(QColor("darkred"), 450, 500);
     m_updater.link("cht4", [=](double value){cht4Gauge->setValue(value);});
     
@@ -209,9 +208,9 @@ MainWindow::MainWindow(QWidget *parent) :
     oilPressGauge->setAngleRange(-135, 90);
     oilPressGauge->setNumMajorTicks(11);
     oilPressGauge->addRangeBand(QColor("darkred"), 0, 15);
-    oilPressGauge->addRangeBand(QColor("yellow"), 15, 20);
+    oilPressGauge->addRangeBand(QColor("goldenrod"), 15, 20);
     oilPressGauge->addRangeBand(QColor("darkgreen"), 20, 90);
-    oilPressGauge->addRangeBand(QColor("yellow"), 90, 95);
+    oilPressGauge->addRangeBand(QColor("goldenrod"), 90, 95);
     oilPressGauge->addRangeBand(QColor("darkred"), 95, 100);
     oilPressGauge->setTextColor(QColor("white"));
     oilPressGauge->setBottomLabel("Oil press.");
@@ -222,9 +221,10 @@ MainWindow::MainWindow(QWidget *parent) :
     auto mapGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
     mapGauge->setValueRange(0, 40);
     mapGauge->setAngleRange(-135, 90);
-    mapGauge->setNumMajorTicks(11);
+    mapGauge->setNumMajorTicks(6);
+    mapGauge->setNumMinorTicks(3);
     mapGauge->addRangeBand(QColor("darkgreen"), 0, 36);
-    mapGauge->addRangeBand(QColor("yellow"), 36, 38);
+    mapGauge->addRangeBand(QColor("goldenrod"), 36, 38);
     mapGauge->addRangeBand(QColor("darkred"), 38, 40);
     mapGauge->setTextColor(QColor("white"));
     mapGauge->setBottomLabel("MAP");
@@ -234,34 +234,38 @@ MainWindow::MainWindow(QWidget *parent) :
     
     auto egt1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt1Gauge->setValueRange(800, 1600);
-    egt1Gauge->setNumMajorTicks(6);
+    egt1Gauge->setNumMajorTicks(5);
+    egt1Gauge->setNumMinorTicks(3);
     egt1Gauge->setTextColor(QColor("white"));
     egt1Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
-    egt1Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
+    egt1Gauge->addRangeBand(QColor("goldenrod"), 1500, 1600);
     m_updater.link("egt1", [=](double value){egt1Gauge->setValue(value);});
 
     auto egt2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt2Gauge->setValueRange(800, 1600);
-    egt2Gauge->setNumMajorTicks(6);
+    egt2Gauge->setNumMajorTicks(5);
+    egt2Gauge->setNumMinorTicks(3);
     egt2Gauge->setTextColor(QColor("white"));
     egt2Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
-    egt2Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
+    egt2Gauge->addRangeBand(QColor("goldenrod"), 1500, 1600);
     m_updater.link("egt2", [=](double value){egt2Gauge->setValue(value);});
 
     auto egt3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt3Gauge->setValueRange(800, 1600);
-    egt3Gauge->setNumMajorTicks(6);
+    egt3Gauge->setNumMajorTicks(5);
+    egt3Gauge->setNumMinorTicks(3);
     egt3Gauge->setTextColor(QColor("white"));
     egt3Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
-    egt3Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
+    egt3Gauge->addRangeBand(QColor("goldenrod"), 1500, 1600);
     m_updater.link("egt3", [=](double value){egt3Gauge->setValue(value);});
 
     auto egt4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt4Gauge->setValueRange(800, 1600);
-    egt4Gauge->setNumMajorTicks(6);
+    egt4Gauge->setNumMajorTicks(5);
+    egt4Gauge->setNumMinorTicks(3);
     egt4Gauge->setTextColor(QColor("white"));
     egt4Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
-    egt4Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
+    egt4Gauge->addRangeBand(QColor("goldenrod"), 1500, 1600);
     m_updater.link("egt4", [=](double value){egt4Gauge->setValue(value);});
     
     auto egtLayout = new QVBoxLayout;
@@ -279,9 +283,9 @@ MainWindow::MainWindow(QWidget *parent) :
     oilTempGauge->setValueRange(60, 260);
     oilTempGauge->setAngleRange(-135, 90);
     oilTempGauge->setNumMajorTicks(11);
-    oilTempGauge->addRangeBand(QColor("yellow"), 60, 100);
+    oilTempGauge->addRangeBand(QColor("goldenrod"), 60, 100);
     oilTempGauge->addRangeBand(QColor("darkgreen"), 100, 220);
-    oilTempGauge->addRangeBand(QColor("yellow"), 220, 240);
+    oilTempGauge->addRangeBand(QColor("goldenrod"), 220, 240);
     oilTempGauge->addRangeBand(QColor("darkred"), 240, 260);
     oilTempGauge->setTextColor(QColor("white"));
     oilTempGauge->setBottomLabel("Oil temp.");
@@ -294,9 +298,9 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelPressGauge->setAngleRange(-135, 90);
     fuelPressGauge->setNumMajorTicks(7);
     fuelPressGauge->addRangeBand(QColor("darkred"), 0, 10);
-    fuelPressGauge->addRangeBand(QColor("yellow"), 10, 15);
+    fuelPressGauge->addRangeBand(QColor("goldenrod"), 10, 15);
     fuelPressGauge->addRangeBand(QColor("darkgreen"), 15, 27);
-    fuelPressGauge->addRangeBand(QColor("yellow"), 27, 28);
+    fuelPressGauge->addRangeBand(QColor("goldenrod"), 27, 28);
     fuelPressGauge->addRangeBand(QColor("darkred"), 28, 30);
     fuelPressGauge->setTextColor(QColor("white"));
     fuelPressGauge->setBottomLabel("Fuel pressure");
@@ -309,7 +313,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelLevel1Gauge->setAngleRange(-135, 90);
     fuelLevel1Gauge->setNumMajorTicks(7);
     fuelLevel1Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
-    fuelLevel1Gauge->addRangeBand(QColor("yellow"), 1.3, 1.5);
+    fuelLevel1Gauge->addRangeBand(QColor("goldenrod"), 1.3, 1.5);
     fuelLevel1Gauge->addRangeBand(QColor("darkgreen"), 1.5, 24);
     fuelLevel1Gauge->setTextColor(QColor("white"));
     fuelLevel1Gauge->setBottomLabel("Fuel level 1");
@@ -323,7 +327,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelLevel2Gauge->setAngleRange(-135, 90);
     fuelLevel2Gauge->setNumMajorTicks(6);
     fuelLevel2Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
-    fuelLevel2Gauge->addRangeBand(QColor("yellow"), 1.3, 1.5);
+    fuelLevel2Gauge->addRangeBand(QColor("goldenrod"), 1.3, 1.5);
     fuelLevel2Gauge->addRangeBand(QColor("darkgreen"), 1.5, 4);
     fuelLevel2Gauge->setTextColor(QColor("white"));
     fuelLevel2Gauge->setBottomLabel("Fuel level 2");
@@ -336,7 +340,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelFlowGauge->setAngleRange(-135, 90);
     fuelFlowGauge->setNumMajorTicks(6);
     fuelFlowGauge->addRangeBand(QColor("darkgreen"), 0, 22);
-    fuelFlowGauge->addRangeBand(QColor("yellow"), 22, 25);
+    fuelFlowGauge->addRangeBand(QColor("goldenrod"), 22, 25);
     fuelFlowGauge->setTextColor(QColor("white"));
     fuelFlowGauge->setBottomLabel("Fuel flow");
     fuelFlowGauge->setTopLabel("gal/h");
@@ -350,6 +354,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lambdaGauge->addRangeBand(QColor("darkgreen"), 30, 35);
     lambdaGauge->setTextColor(QColor("white"));
     lambdaGauge->setBottomLabel("Lambda");
+    lambdaGauge->setTopLabel("%");
     m_updater.link("aileron trim",
                    [=](double value){lambdaGauge->setValue(value);});
     
@@ -368,7 +373,7 @@ MainWindow::MainWindow(QWidget *parent) :
     airspeedGauge->setAngleRange(-135, 90);
     airspeedGauge->setNumMajorTicks(9);
     airspeedGauge->addRangeBand(QColor("darkgreen"), 70, 180);
-    airspeedGauge->addRangeBand(QColor("yellow"), 180, 310);
+    airspeedGauge->addRangeBand(QColor("goldenrod"), 180, 310);
     airspeedGauge->addRangeBand(QColor("darkred"), 310, 350);
     airspeedGauge->setTextColor(QColor("white"));
     airspeedGauge->setBottomLabel("Airspeed");

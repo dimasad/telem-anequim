@@ -6,11 +6,6 @@
 #include <QSharedPointer>
 #include <QSvgRenderer>
 
-/* TODO:
- * - Make rangeBands in Gauges.
- * - Make minor ticks.
- */
-
 
 class SvgGauge : public QGraphicsView
 {

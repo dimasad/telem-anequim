@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 
+
 typedef enum {
     AnchorTop, AnchorBottom, AnchorLeft, AnchorRight,
     AnchorTopLeft, AnchorTopRight, AnchorBottomLeft, AnchorBottomRight,

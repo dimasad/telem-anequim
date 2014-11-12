@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QAction>
 #include <QDialogButtonBox>
+#include <QFileDialog>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLabel>
@@ -35,6 +36,7 @@ Settings::Settings() :
 {
     m_emsPort = m_storedSettings.value("ems_port").toString();
     m_efisPort = m_storedSettings.value("efis_port").toString();
+    m_logFolder = m_storedSettings.value("log_folder").toString();
 }
 
 
@@ -53,8 +55,18 @@ Settings::setEfisPort(const QString &newEfisPort)
 {
     m_efisPort = newEfisPort;
     m_storedSettings.setValue("efis_port", newEfisPort);
-
+    
     emit efisPortChanged(newEfisPort);
+}
+
+
+void
+Settings::setLogFolder(const QString &newLogFolder)
+{
+    m_logFolder = newLogFolder;
+    m_storedSettings.setValue("log_folder", newLogFolder);
+    
+    emit logFolderChanged(newLogFolder);
 }
 
 
@@ -73,10 +85,16 @@ SettingsDialog::SettingsDialog(Settings *settings, QWidget *parent) :
     for (const auto &portInfo : QSerialPortInfo::availablePorts())
         portNames.append(portInfo.portName());
     
-    m_efisPortComboBox.addItems(portNames);
-    m_emsPortComboBox.addItems(portNames);
+    m_efisPortComboBox = new QComboBox;
+    m_emsPortComboBox = new QComboBox;
+    m_efisPortComboBox->addItems(portNames);
+    m_emsPortComboBox->addItems(portNames);
     setCurrentPort(settings->emsPort(), m_emsPortComboBox);
     setCurrentPort(settings->efisPort(), m_efisPortComboBox);
+
+    m_logFolderButton = new QPushButton(settings->logFolder());
+    connect(m_logFolderButton, SIGNAL(clicked()), 
+            this, SLOT(chooseLogFolder()));
     
     auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                           | QDialogButtonBox::Cancel);
@@ -84,8 +102,9 @@ SettingsDialog::SettingsDialog(Settings *settings, QWidget *parent) :
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     auto layout = new QFormLayout;
-    layout->addRow("EFIS port:", &m_efisPortComboBox);
-    layout->addRow("EMS port:", &m_emsPortComboBox);
+    layout->addRow("EFIS port:", m_efisPortComboBox);
+    layout->addRow("EMS port:", m_emsPortComboBox);
+    layout->addRow("Log folder:", m_logFolderButton);
     layout->addRow(buttonBox);
     setLayout(layout);
     
@@ -94,23 +113,34 @@ SettingsDialog::SettingsDialog(Settings *settings, QWidget *parent) :
 
 
 void
+SettingsDialog::chooseLogFolder()
+{
+    QFileDialog chooser(this);
+    chooser.setFileMode(QFileDialog::Directory);
+    if (chooser.exec())
+        m_logFolderButton->setText(chooser.selectedFiles().first());
+}
+
+
+void
 SettingsDialog::saveSettings()
 {
-    m_settings->setEfisPort(m_efisPortComboBox.currentText());
-    m_settings->setEmsPort(m_emsPortComboBox.currentText());
+    m_settings->setEfisPort(m_efisPortComboBox->currentText());
+    m_settings->setEmsPort(m_emsPortComboBox->currentText());
+    m_settings->setLogFolder(m_logFolderButton->text());
     m_settings->sync();
 }
 
 
 void
-SettingsDialog::setCurrentPort(const QString &portName, QComboBox &comboBox)
+SettingsDialog::setCurrentPort(const QString &portName, QComboBox *comboBox)
 {
-    int index = comboBox.findText(portName);
+    int index = comboBox->findText(portName);
     if (index == -1) {
-        comboBox.insertItem(0, portName);
+        comboBox->insertItem(0, portName);
         index = 0;
     }
-    comboBox.setCurrentIndex(index);
+    comboBox->setCurrentIndex(index);
 }
 
 

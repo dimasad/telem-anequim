@@ -5,6 +5,7 @@
 #include "TelemetryStream.hpp"
 
 
+#include <QPushButton>
 #include <QComboBox>
 #include <QDialog>
 #include <QLabel>
@@ -44,24 +45,29 @@ class Settings : public QObject
                NOTIFY emsPortChanged)
     Q_PROPERTY(QString efisPort READ efisPort WRITE setEfisPort
                NOTIFY efisPortChanged)
+    Q_PROPERTY(QString logFolder READ logFolder WRITE setLogFolder
+               NOTIFY logFolderChanged)
 
 public:
     Settings();
     QString emsPort() const {return m_emsPort;}
     QString efisPort() const {return m_efisPort;}
+    QString logFolder() const {return m_logFolder;}
     void setEmsPort(const QString &newEmsPort);
     void setEfisPort(const QString &newEmsPort);
+    void setLogFolder(const QString &newLogFolder);
 
 signals:
     void emsPortChanged(const QString &newEmsPort);
     void efisPortChanged(const QString &newEfisPort);
+    void logFolderChanged(const QString &newLogFolder);
 
 public slots:
     void sync();
 
 private:
     QSettings m_storedSettings;
-    QString m_emsPort, m_efisPort;
+    QString m_emsPort, m_efisPort, m_logFolder;
 };
 
 
@@ -73,13 +79,15 @@ public:
     SettingsDialog(Settings *settings, QWidget *parent=0);
 
 public slots:
+    void chooseLogFolder();
     void saveSettings();
 
 protected:
-    QComboBox m_emsPortComboBox, m_efisPortComboBox;
+    QComboBox *m_emsPortComboBox, *m_efisPortComboBox;
+    QPushButton *m_logFolderButton;
     Settings *m_settings;
     
-    void setCurrentPort(const QString &portName, QComboBox &comboBox);
+    void setCurrentPort(const QString &portName, QComboBox *comboBox);
 };
 
 

@@ -36,15 +36,19 @@ public:
     using SvgGauge::SvgGauge;
     void setNumMajorTicks(unsigned newNumMajorTicks);
     void setTextColor(const QColor &newColor);
+    void setValueLabelFormat(char f, int precision);
     void setValueRange(double valueMin, double valueMax);
     
 protected:
     double m_valueMin = 0, m_valueMax = 1;
     unsigned m_numMajorTicks = 0;
+    int m_valueLabelPrecision = 8;
+    char m_valueLabelFormat = 'g';
     QColor m_textColor = QColor("black");
     QList<QGraphicsSvgItem *> m_majorTicks;
     QList<QGraphicsSimpleTextItem *> m_majorTickLabels;
     QList<QGraphicsSimpleTextItem *> m_textLabels;
+    QGraphicsSimpleTextItem *m_valueLabel = 0;
     
     void updateMajorTicks();
     
@@ -70,7 +74,6 @@ protected:
     };
     
     QGraphicsSvgItem *m_background, *m_needle, *m_foreground;
-    QGraphicsSimpleTextItem *m_valueLabel = 0;
     QPointF m_pivot;
     double m_angleMin = -90, m_angleMax = 90;
     double m_rangeBandInnerRadius, m_rangeBandOuterRadius;
@@ -97,8 +100,7 @@ protected:
     };
     
     QGraphicsSvgItem *m_background, *m_cursor, *m_foreground;
-    QGraphicsSimpleTextItem *m_valueLabel = 0;
-    QRectF m_cursorRange;
+    QRectF m_cursorRange, m_valueLabelRect;
     double m_startPos, m_endPos;
     
     void moveToPos(QGraphicsItem *item, double pos);

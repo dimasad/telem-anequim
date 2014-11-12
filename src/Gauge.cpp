@@ -1,6 +1,7 @@
 #include "Gauge.hpp"
 
 #include <QtGlobal>
+#include <QFont>
 #include <QGraphicsSvgItem>
 #include <QGraphicsSimpleTextItem>
 #include <QLocale>
@@ -73,7 +74,14 @@ TickedSvgGauge::setTextColor(const QColor &newColor)
         tickLabel->setBrush(m_textColor);
     for (auto textLabel: m_textLabels)
         textLabel->setBrush(m_textColor);
+}
     
+
+void
+TickedSvgGauge::setValueLabelFormat(char f, int precision)
+{
+    m_valueLabelFormat = f;
+    m_valueLabelPrecision = precision;
 }
 
 
@@ -174,8 +182,11 @@ void
 AngularSvgGauge::setValue(double value)
 {
     m_needle->setRotation(valueToAngle(value));
-    if (m_valueLabel != 0)
-        m_valueLabel->setText(QLocale().toString(value));
+    if (m_valueLabel != 0) {
+        QString text = QLocale().toString(value, m_valueLabelFormat, 
+                                          m_valueLabelPrecision);
+        m_valueLabel->setText(text);
+    }
 }
 
 
@@ -274,6 +285,17 @@ LinearSvgGauge::LinearSvgGauge(const QString &svgFile, QWidget *parent) :
     m_background = addItemFromElement("background", BackgroundLayer);
     m_cursor = addItemFromElement("cursor", CursorLayer);
     m_foreground = addItemFromElement("foreground", ForegroundLayer);
+
+    m_valueLabelRect = m_renderer.boundsOnElement("valueLabel");
+    m_valueLabel = new QGraphicsSimpleTextItem();
+    m_valueLabel->setZValue(InfoLayer);
+    m_valueLabel->setBrush(m_textColor);
+    scene()->addItem(m_valueLabel);
+    m_textLabels.append(m_valueLabel);
+
+    QFont valueLabelFont;
+    valueLabelFont.setPixelSize(m_valueLabelRect.height());
+    m_valueLabel->setFont(valueLabelFont);
 }
 
 
@@ -299,6 +321,9 @@ void
 LinearSvgGauge::setValue(double value)
 {
     moveToPos(m_cursor, valueToPos(value));
+    m_valueLabel->setText(QLocale().toString(value, m_valueLabelFormat, 
+                                             m_valueLabelPrecision));
+    anchorItem(m_valueLabel, AnchorBottomRight, m_valueLabelRect.bottomRight());
 }
 
 
@@ -312,7 +337,7 @@ LinearSvgGauge::placeMajorTick(double value)
 
     QGraphicsSimpleTextItem *tickLabel = new QGraphicsSimpleTextItem();
     tickLabel->setText(QLocale().toString(value));
-    tickLabel->setBrush(QColor("white"));
+    tickLabel->setBrush(QColor(m_textColor));
     tickLabel->setZValue(InfoLayer);
     scene()->addItem(tickLabel);
     m_majorTickLabels.append(tickLabel);

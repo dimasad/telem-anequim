@@ -115,4 +115,11 @@
      d="m 135.55698,-29.934904 -36.603543,0 18.301773,-31.699602 z"
      inkscape:transform-center-y="3.1721028"
      transform="matrix(0.39205857,0,0,-0.60040553,19.431658,-9.0023913)" />
+  <rect
+     style="fill:#ffff00;fill-opacity:1;stroke:none"
+     id="valueLabel"
+     width="47.447426"
+     height="23.239555"
+     x="248.13066"
+     y="9.6698236" />
 </svg>

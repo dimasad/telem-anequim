@@ -152,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht1Gauge->setValueRange(150, 500);
     cht1Gauge->setNumMajorTicks(8);
+    cht1Gauge->setTextColor(QColor("white"));
     cht1Gauge->addRangeBand(QColor("darkred"), 0, 150);
     cht1Gauge->addRangeBand(QColor("yellow"), 150, 200);
     cht1Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
@@ -162,6 +163,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto cht2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht2Gauge->setValueRange(150, 500);
     cht2Gauge->setNumMajorTicks(8);
+    cht2Gauge->setTextColor(QColor("white"));
     cht2Gauge->addRangeBand(QColor("darkred"), 0, 150);
     cht2Gauge->addRangeBand(QColor("yellow"), 150, 200);
     cht2Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
@@ -172,6 +174,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto cht3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht3Gauge->setValueRange(150, 500);
     cht3Gauge->setNumMajorTicks(8);
+    cht3Gauge->setTextColor(QColor("white"));
     cht3Gauge->addRangeBand(QColor("darkred"), 0, 150);
     cht3Gauge->addRangeBand(QColor("yellow"), 150, 200);
     cht3Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
@@ -182,6 +185,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto cht4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     cht4Gauge->setValueRange(150, 500);
     cht4Gauge->setNumMajorTicks(8);
+    cht4Gauge->setTextColor(QColor("white"));
     cht4Gauge->addRangeBand(QColor("darkred"), 0, 150);
     cht4Gauge->addRangeBand(QColor("yellow"), 150, 200);
     cht4Gauge->addRangeBand(QColor("darkgreen"), 200, 435);
@@ -231,6 +235,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto egt1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt1Gauge->setValueRange(800, 1600);
     egt1Gauge->setNumMajorTicks(6);
+    egt1Gauge->setTextColor(QColor("white"));
     egt1Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
     egt1Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt1", [=](double value){egt1Gauge->setValue(value);});
@@ -238,6 +243,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto egt2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt2Gauge->setValueRange(800, 1600);
     egt2Gauge->setNumMajorTicks(6);
+    egt2Gauge->setTextColor(QColor("white"));
     egt2Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
     egt2Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt2", [=](double value){egt2Gauge->setValue(value);});
@@ -245,6 +251,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto egt3Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt3Gauge->setValueRange(800, 1600);
     egt3Gauge->setNumMajorTicks(6);
+    egt3Gauge->setTextColor(QColor("white"));
     egt3Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
     egt3Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt3", [=](double value){egt3Gauge->setValue(value);});
@@ -252,6 +259,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto egt4Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
     egt4Gauge->setValueRange(800, 1600);
     egt4Gauge->setNumMajorTicks(6);
+    egt4Gauge->setTextColor(QColor("white"));
     egt4Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
     egt4Gauge->addRangeBand(QColor("yellow"), 1500, 1600);
     m_updater.link("egt4", [=](double value){egt4Gauge->setValue(value);});

@@ -265,6 +265,7 @@ MainWindow::MainWindow(QWidget *parent) :
     egt1Gauge->setTextColor(QColor("white"));
     egt1Gauge->addRangeBand(QColor("darkgreen"), 400, 1500);
     egt1Gauge->addRangeBand(QColor("goldenrod"), 1500, 1600);
+    egt1Gauge->setValue(1600);
     m_updater.link("egt1", [=](double value){egt1Gauge->setValue(value);});
 
     auto egt2Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
@@ -342,7 +343,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelLevel1Gauge->addRangeBand(QColor("goldenrod"), 1.3, 1.5);
     fuelLevel1Gauge->addRangeBand(QColor("darkgreen"), 1.5, 24);
     fuelLevel1Gauge->setTextColor(QColor("white"));
-    fuelLevel1Gauge->setTopLabel("Fuel level 1");
+    fuelLevel1Gauge->setTopLabel("Fuel 1 (gal)");
     //fuelLevel1Gauge->setTopLabel("gal");
     m_updater.link("fuel level 1",
                    [=](double value){fuelLevel1Gauge->setValue(value);});

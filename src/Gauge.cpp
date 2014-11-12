@@ -410,8 +410,6 @@ LinearSvgGauge::placeMajorTick(double value)
     QRectF tickBoundingRect = tick->sceneBoundingRect();
     if (value == m_valueMin)
         anchorItem(tickLabel, AnchorTopLeft, tickBoundingRect.bottomLeft());
-    else if (value == m_valueMax)
-        anchorItem(tickLabel, AnchorTopRight, tickBoundingRect.bottomRight());
     else
         anchorItem(tickLabel, AnchorTop, bottomCenter(tickBoundingRect));
 }

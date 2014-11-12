@@ -146,9 +146,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_efisStatusTimer = new QTimer(this);
     m_efisStatusTimer->setInterval(1000);
     m_efisStatusTimer->setSingleShot(true);
-    connect(m_efisStream, SIGNAL(messageReceived()),
+    connect(m_efisStream, SIGNAL(messageReceived(const TelemetryMessage &)),
             m_efisStatusTimer, SLOT(start()));
-    connect(m_efisStream, SIGNAL(messageReceived()),
+    connect(m_efisStream, SIGNAL(messageReceived(const TelemetryMessage &)),
             this, SLOT(efisOnline()));
     connect(m_efisStatusTimer, SIGNAL(timeout()),
             this, SLOT(efisOffline()));
@@ -156,9 +156,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_emsStatusTimer = new QTimer(this);
     m_emsStatusTimer->setInterval(1000);
     m_emsStatusTimer->setSingleShot(true);
-    connect(m_emsStream, SIGNAL(messageReceived()),
+    connect(m_emsStream, SIGNAL(messageReceived(const TelemetryMessage &)),
             m_emsStatusTimer, SLOT(start()));
-    connect(m_emsStream, SIGNAL(messageReceived()),
+    connect(m_emsStream, SIGNAL(messageReceived(const TelemetryMessage &)),
             this, SLOT(emsOnline()));
     connect(m_emsStatusTimer, SIGNAL(timeout()),
             this, SLOT(emsOffline()));
@@ -334,16 +334,16 @@ MainWindow::MainWindow(QWidget *parent) :
     m_updater.link("fuel pressure",
                    [=](double value){fuelPressGauge->setValue(value);});
 
-    auto fuelLevel1Gauge = new AngularSvgGauge(":/images/angular-gauge.svg");
+    auto fuelLevel1Gauge = new AngularSvgGauge(":/images/top-circle-gauge.svg");
     fuelLevel1Gauge->setValueRange(0, 24);
-    fuelLevel1Gauge->setAngleRange(-135, 90);
+    fuelLevel1Gauge->setAngleRange(-80, 80);
     fuelLevel1Gauge->setNumMajorTicks(7);
     fuelLevel1Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
     fuelLevel1Gauge->addRangeBand(QColor("goldenrod"), 1.3, 1.5);
     fuelLevel1Gauge->addRangeBand(QColor("darkgreen"), 1.5, 24);
     fuelLevel1Gauge->setTextColor(QColor("white"));
-    fuelLevel1Gauge->setBottomLabel("Fuel level 1");
-    fuelLevel1Gauge->setTopLabel("gal");
+    fuelLevel1Gauge->setTopLabel("Fuel level 1");
+    //fuelLevel1Gauge->setTopLabel("gal");
     m_updater.link("fuel level 1",
                    [=](double value){fuelLevel1Gauge->setValue(value);});
 

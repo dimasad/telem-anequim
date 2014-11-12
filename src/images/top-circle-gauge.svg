@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="304.01532"
+   height="164.3717"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="top-circle-gauge.svg">
+  <defs
+     id="defs22">
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect3778"
+       is_visible="true"
+       pattern="M 0,5 C 0,2.24 2.24,0 5,0 7.76,0 10,2.24 10,5 10,7.76 7.76,10 5,10 2.24,10 0,7.76 0,5 z"
+       copytype="single_stretched"
+       prop_scale="1"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3776"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect3772"
+       is_visible="true"
+       pattern="M 0,5 C 0,2.24 2.24,0 5,0 7.76,0 10,2.24 10,5 10,7.76 7.76,10 5,10 2.24,10 0,7.76 0,5 z"
+       copytype="single_stretched"
+       prop_scale="1"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3770"
+       is_visible="true" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1280"
+     inkscape:window-height="1003"
+     id="namedview20"
+     showgrid="false"
+     inkscape:zoom="1.1513807"
+     inkscape:cx="363.19627"
+     inkscape:cy="84.13202"
+     inkscape:window-x="1918"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata3044">image/svg+xml<rdf:RDF>
+  <cc:Work
+     rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type
+       rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+  </cc:Work>
+</rdf:RDF>
+</metadata>
+  <g
+     display="inline"
+     id="background"
+     style="display:inline"
+     transform="translate(-1.1920929e-6,3.0994415e-5)">
+    <rect
+       stroke-miterlimit="10"
+       rx="21.08169"
+       ry="21.08169"
+       y="2.0993929"
+       x="2.0994251"
+       height="160.17285"
+       width="299.81647"
+       id="rect2936"
+       style="fill:#453e3e;stroke:#000000;stroke-width:4.19884777;stroke-miterlimit:10;stroke-dashoffset:0" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#332d2d;fill-opacity:1;stroke:#000000;stroke-width:1.43644476;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+       id="path2998"
+       sodipodi:cx="-37.780727"
+       sodipodi:cy="59.714741"
+       sodipodi:rx="48.202999"
+       sodipodi:ry="48.202999"
+       d="m -85.983727,59.714739 a 48.202999,48.202999 0 0 1 96.405999,10e-7 l -48.202999,10e-7 z"
+       transform="matrix(2.8386432,0,0,2.7316894,259.25366,-24.153296)"
+       sodipodi:start="3.1415927"
+       sodipodi:end="6.2831853" />
+  </g>
+  <path
+     stroke-miterlimit="4"
+     id="majorTick"
+     d="m 152.00764,9.590058 0,26.504333"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#ffffff;stroke-width:3.16159701;stroke-miterlimit:4" />
+  <path
+     stroke-miterlimit="4"
+     d="m 151.98801,12.456391 0.0393,13.241638"
+     id="minorTick"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#ffffff;stroke-width:1.58079803;stroke-miterlimit:4" />
+  <rect
+     ry="10"
+     rx="9.999999"
+     y="76.301788"
+     x="84.569366"
+     height="86.428574"
+     width="127.14286"
+     id="foreground"
+     style="fill:none" />
+  <rect
+     style="fill:#800000;stroke:#800000"
+     id="rangeBand"
+     width="5.6453962"
+     height="8.5766592"
+     x="149.177"
+     y="10.066572"
+     inkscape:label="#rect2999" />
+  <rect
+     y="93.421539"
+     x="130.87558"
+     height="23.03018"
+     width="42.264179"
+     id="topLabel"
+     style="fill:#ffff00;fill-opacity:1;stroke:none" />
+  <rect
+     y="61.387909"
+     x="127.49782"
+     height="27.097466"
+     width="49.019699"
+     id="valueLabel"
+     style="fill:#ffff00;fill-opacity:1;stroke:none" />
+  <rect
+     style="fill:#ffff00;fill-opacity:1;stroke:none"
+     id="tickLabel"
+     width="29.513123"
+     height="16.082001"
+     x="137.25111"
+     y="40.89563" />
+  <g
+     display="inline"
+     id="needle"
+     style="display:inline"
+     transform="translate(-1.1920929e-6,3.0994415e-5)">
+    <path
+       id="pivot"
+       d="m 156.52241,134.78439 c 5.60692,2.49457 8.12996,9.06212 5.63543,14.66895 -2.49459,5.60695 -9.06215,8.13005 -14.66907,5.63547 -5.60692,-2.49459 -8.12994,-9.06218 -5.63535,-14.66912 2.49454,-5.60684 9.06208,-8.12988 14.669,-5.6353 z"
+       inkscape:connector-curvature="0"
+       style="fill:#000000;stroke:#000000" />
+    <path
+       stroke-miterlimit="4"
+       d="m 151.93471,31.536255 -4.51099,17.86734 2.11154,85.126465 4.90125,-0.22354 2.15509,-84.646302 -4.65689,-18.123962 z"
+       id="path3902"
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4" />
+    <path
+       id="path3909"
+       d="m 148.91147,119.11009 6.19237,0.0266 -0.67444,19.25769 -4.8968,0.29217 -0.62113,-19.57647 z"
+       inkscape:connector-curvature="0"
+       style="fill:#000000;stroke:#000000;stroke-width:0.94430602px" />
+  </g>
+</svg>

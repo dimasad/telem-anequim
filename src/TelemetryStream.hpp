@@ -1,9 +1,10 @@
 #ifndef TELEMETRYSTREAM_HPP
 #define TELEMETRYSTREAM_HPP
 
-#include <QtSerialPort/QSerialPort>
+
 #include <QFile>
 #include <QList>
+#include <QSerialPort>
 #include <QTime>
 #include <QTextStream>
 
@@ -55,6 +56,7 @@ public slots:
 
 signals:
     void variableUpdated(const TelemetryVariable & var);
+    void messageReceived(const TelemetryMessage & msg);
 };
 
 

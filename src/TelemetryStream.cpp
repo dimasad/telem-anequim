@@ -94,6 +94,7 @@ TelemetryStream::triggerRead()
 	return;
     
     TelemetryMessage msg = parseMessage(line);
+    emit messageReceived(msg);
     for (TelemetryMessage::iterator i = msg.begin(); i != msg.end(); i++)
 	emit variableUpdated(*i);
 

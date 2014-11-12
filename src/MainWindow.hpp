@@ -7,6 +7,7 @@
 
 #include <QComboBox>
 #include <QDialog>
+#include <QLabel>
 #include <QMainWindow>
 #include <QMap>
 #include <QSettings>
@@ -90,6 +91,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
 public slots:
+    void efisOnline();
+    void efisOffline();
+    void emsOnline();
+    void emsOffline();
     void showSettingsDialog();
 
 private:
@@ -97,6 +102,8 @@ private:
     GaugeUpdater m_updater;
     EfisStream *m_efisStream;
     EmsStream *m_emsStream;
+    QLabel *m_efisStatusLabel, *m_emsStatusLabel;
+    QTimer *m_efisStatusTimer, *m_emsStatusTimer;
 };
 
 #endif // MAINWINDOW_HPP

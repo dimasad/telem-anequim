@@ -7,6 +7,7 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QSerialPortInfo>
+#include <QStatusBar>
 #include <QToolBar>
 #include <QVBoxLayout>
 
@@ -136,6 +137,31 @@ MainWindow::MainWindow(QWidget *parent) :
     auto mainToolBar = addToolBar("Main");
     mainToolBar->setMovable(false);
     mainToolBar->addAction(showSettings);
+
+    m_efisStatusLabel = new QLabel("EFIS offline.");
+    m_emsStatusLabel = new QLabel("EMS offline.");
+    statusBar()->addWidget(m_efisStatusLabel);
+    statusBar()->addWidget(m_emsStatusLabel);
+
+    m_efisStatusTimer = new QTimer(this);
+    m_efisStatusTimer->setInterval(1000);
+    m_efisStatusTimer->setSingleShot(true);
+    connect(m_efisStream, SIGNAL(messageReceived()),
+            m_efisStatusTimer, SLOT(start()));
+    connect(m_efisStream, SIGNAL(messageReceived()),
+            this, SLOT(efisOnline()));
+    connect(m_efisStatusTimer, SIGNAL(timeout()),
+            this, SLOT(efisOffline()));
+
+    m_emsStatusTimer = new QTimer(this);
+    m_emsStatusTimer->setInterval(1000);
+    m_emsStatusTimer->setSingleShot(true);
+    connect(m_emsStream, SIGNAL(messageReceived()),
+            m_emsStatusTimer, SLOT(start()));
+    connect(m_emsStream, SIGNAL(messageReceived()),
+            this, SLOT(emsOnline()));
+    connect(m_emsStatusTimer, SIGNAL(timeout()),
+            this, SLOT(emsOffline()));
     
     auto rpmGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
     rpmGauge->setValueRange(0, 3500);
@@ -428,6 +454,34 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(centralWidget);
     
     setWindowTitle(tr("Telemetry"));
+}
+
+
+void
+MainWindow::efisOnline()
+{
+    m_efisStatusLabel->setText("EFIS online.");
+}
+
+
+void
+MainWindow::efisOffline()
+{
+    m_efisStatusLabel->setText("EFIS offline.");
+}
+
+
+void
+MainWindow::emsOnline()
+{
+    m_emsStatusLabel->setText("EMS online.");
+}
+
+
+void
+MainWindow::emsOffline()
+{
+    m_emsStatusLabel->setText("EMS offline.");
 }
 
 

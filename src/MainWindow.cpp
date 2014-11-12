@@ -141,12 +141,12 @@ MainWindow::MainWindow(QWidget *parent) :
     rpmGauge->setValueRange(0, 3500);
     rpmGauge->setAngleRange(-135, 90);
     rpmGauge->setNumMajorTicks(8);
-    rpmGauge->setValueLabelPos(152, 220);
     rpmGauge->setTextColor(QColor("white"));
     rpmGauge->addRangeBand(QColor("darkgreen"), 600, 2700);
     rpmGauge->addRangeBand(QColor("yellow"), 2700, 3200);
     rpmGauge->addRangeBand(QColor("darkred"), 3200, 3500);
-    rpmGauge->addLabel("RPM", 152, 200);
+    rpmGauge->setBottomLabel("RPM");
+    rpmGauge->setValue(1234);
     m_updater.link("RPM", [=](double value){rpmGauge->setValue(value);});
     
     auto cht1Gauge = new LinearSvgGauge(":/images/horizontal-gauge.svg");
@@ -213,9 +213,9 @@ MainWindow::MainWindow(QWidget *parent) :
     oilPressGauge->addRangeBand(QColor("darkgreen"), 20, 90);
     oilPressGauge->addRangeBand(QColor("yellow"), 90, 95);
     oilPressGauge->addRangeBand(QColor("darkred"), 95, 100);
-    oilPressGauge->setValueLabelPos(152, 220);
     oilPressGauge->setTextColor(QColor("white"));
-    oilPressGauge->addLabel("Oil pressure (psi)", 152, 200);
+    oilPressGauge->setBottomLabel("Oil press.");
+    oilPressGauge->setTopLabel("psi");
     m_updater.link("oil pressure",
                    [=](double value){oilPressGauge->setValue(value);});
  
@@ -226,9 +226,9 @@ MainWindow::MainWindow(QWidget *parent) :
     mapGauge->addRangeBand(QColor("darkgreen"), 0, 36);
     mapGauge->addRangeBand(QColor("yellow"), 36, 38);
     mapGauge->addRangeBand(QColor("darkred"), 38, 40);
-    mapGauge->setValueLabelPos(152, 220);
     mapGauge->setTextColor(QColor("white"));
-    mapGauge->addLabel("MAP (inHg)", 152, 200);
+    mapGauge->setBottomLabel("MAP");
+    mapGauge->setTopLabel("inHg");
     m_updater.link("manifold pressure",
                    [=](double value){mapGauge->setValue(value);});
     
@@ -283,9 +283,9 @@ MainWindow::MainWindow(QWidget *parent) :
     oilTempGauge->addRangeBand(QColor("darkgreen"), 100, 220);
     oilTempGauge->addRangeBand(QColor("yellow"), 220, 240);
     oilTempGauge->addRangeBand(QColor("darkred"), 240, 260);
-    oilTempGauge->setValueLabelPos(152, 220);
     oilTempGauge->setTextColor(QColor("white"));
-    oilTempGauge->addLabel("Oil temperature (\u00B0F)", 152, 200);
+    oilTempGauge->setBottomLabel("Oil temp.");
+    oilTempGauge->setTopLabel("\u00B0F");
     m_updater.link("oil temperature",
                    [=](double value){oilTempGauge->setValue(value);});
     
@@ -298,9 +298,9 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelPressGauge->addRangeBand(QColor("darkgreen"), 15, 27);
     fuelPressGauge->addRangeBand(QColor("yellow"), 27, 28);
     fuelPressGauge->addRangeBand(QColor("darkred"), 28, 30);
-    fuelPressGauge->setValueLabelPos(152, 220);
     fuelPressGauge->setTextColor(QColor("white"));
-    fuelPressGauge->addLabel("Fuel pressure (psi)", 152, 200);
+    fuelPressGauge->setBottomLabel("Fuel pressure");
+    fuelPressGauge->setTopLabel("psi");
     m_updater.link("fuel pressure",
                    [=](double value){fuelPressGauge->setValue(value);});
 
@@ -311,9 +311,9 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelLevel1Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
     fuelLevel1Gauge->addRangeBand(QColor("yellow"), 1.3, 1.5);
     fuelLevel1Gauge->addRangeBand(QColor("darkgreen"), 1.5, 24);
-    fuelLevel1Gauge->setValueLabelPos(152, 220);
     fuelLevel1Gauge->setTextColor(QColor("white"));
-    fuelLevel1Gauge->addLabel("Fuel level 1 (gal)", 152, 200);
+    fuelLevel1Gauge->setBottomLabel("Fuel level 1");
+    fuelLevel1Gauge->setTopLabel("gal");
     m_updater.link("fuel level 1",
                    [=](double value){fuelLevel1Gauge->setValue(value);});
 
@@ -325,21 +325,21 @@ MainWindow::MainWindow(QWidget *parent) :
     fuelLevel2Gauge->addRangeBand(QColor("darkred"), 0, 1.3);
     fuelLevel2Gauge->addRangeBand(QColor("yellow"), 1.3, 1.5);
     fuelLevel2Gauge->addRangeBand(QColor("darkgreen"), 1.5, 4);
-    fuelLevel2Gauge->setValueLabelPos(152, 220);
     fuelLevel2Gauge->setTextColor(QColor("white"));
-    fuelLevel2Gauge->addLabel("Fuel level 2 (gal)", 152, 200);
+    fuelLevel2Gauge->setBottomLabel("Fuel level 2");
+    fuelLevel2Gauge->setTopLabel("gal");
     m_updater.link("fuel level 2",
                    [=](double value){fuelLevel2Gauge->setValue(value);});
 
     auto fuelFlowGauge = new AngularSvgGauge(":/images/angular-gauge.svg");
     fuelFlowGauge->setValueRange(0, 25);
     fuelFlowGauge->setAngleRange(-135, 90);
-    fuelFlowGauge->setNumMajorTicks(5);
+    fuelFlowGauge->setNumMajorTicks(6);
     fuelFlowGauge->addRangeBand(QColor("darkgreen"), 0, 22);
     fuelFlowGauge->addRangeBand(QColor("yellow"), 22, 25);
-    fuelFlowGauge->setValueLabelPos(152, 220);
     fuelFlowGauge->setTextColor(QColor("white"));
-    fuelFlowGauge->addLabel("Fuel flow (gal/h)", 152, 200);
+    fuelFlowGauge->setBottomLabel("Fuel flow");
+    fuelFlowGauge->setTopLabel("gal/h");
     m_updater.link("fuel flow",
                    [=](double value){fuelFlowGauge->setValue(value);});
 
@@ -348,9 +348,8 @@ MainWindow::MainWindow(QWidget *parent) :
     lambdaGauge->setAngleRange(-135, 90);
     lambdaGauge->setNumMajorTicks(11);
     lambdaGauge->addRangeBand(QColor("darkgreen"), 30, 35);
-    lambdaGauge->setValueLabelPos(152, 220);
     lambdaGauge->setTextColor(QColor("white"));
-    lambdaGauge->addLabel("Lambda", 152, 200);
+    lambdaGauge->setBottomLabel("Lambda");
     m_updater.link("aileron trim",
                    [=](double value){lambdaGauge->setValue(value);});
     
@@ -358,9 +357,9 @@ MainWindow::MainWindow(QWidget *parent) :
     altitudeGauge->setValueRange(0, 10000);
     altitudeGauge->setAngleRange(-135, 90);
     altitudeGauge->setNumMajorTicks(11);
-    altitudeGauge->setValueLabelPos(152, 220);
     altitudeGauge->setTextColor(QColor("white"));
-    altitudeGauge->addLabel("Altitude (ft)", 152, 200);
+    altitudeGauge->setBottomLabel("Altitude");
+    altitudeGauge->setTopLabel("ft");
     m_updater.link("displayed altitude",
                    [=](double value){altitudeGauge->setValue(value*3.28084);});
 
@@ -371,9 +370,9 @@ MainWindow::MainWindow(QWidget *parent) :
     airspeedGauge->addRangeBand(QColor("darkgreen"), 70, 180);
     airspeedGauge->addRangeBand(QColor("yellow"), 180, 310);
     airspeedGauge->addRangeBand(QColor("darkred"), 310, 350);
-    airspeedGauge->setValueLabelPos(152, 220);
     airspeedGauge->setTextColor(QColor("white"));
-    airspeedGauge->addLabel("Airspeed (kt)", 152, 200);
+    airspeedGauge->setBottomLabel("Airspeed");
+    airspeedGauge->setTopLabel("kt");
     m_updater.link("airspeed",
                    [=](double value){airspeedGauge->setValue(value*1.9438);});
 
@@ -382,9 +381,9 @@ MainWindow::MainWindow(QWidget *parent) :
     climbRateGauge->setValueRange(-4000, 4000);
     climbRateGauge->setAngleRange(-135, 135);
     climbRateGauge->setNumMajorTicks(9);
-    climbRateGauge->setValueLabelPos(152, 220);
     climbRateGauge->setTextColor(QColor("white"));
-    climbRateGauge->addLabel("Climb Rate (fpm)", 152, 200);
+    climbRateGauge->setBottomLabel("Climb Rate");
+    climbRateGauge->setTopLabel("fpm");
     m_updater.link("vertical speed",
                    [=](double value){climbRateGauge->setValue(value*60);});
 

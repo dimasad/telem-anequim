@@ -62,11 +62,11 @@ class AngularSvgGauge : public TickedSvgGauge
     
 public:
     AngularSvgGauge(const QString &svgFile, QWidget *parent=0);
-    void addLabel(const QString &text, double x, double y);
     void addRangeBand(const QColor &color, double startValue, double endValue);
     void setAngleRange(double angleMin, double angleMax);
     void setValue(double value);
-    void setValueLabelPos(double xPos, double yPos);
+    void setBottomLabel(const QString &text);
+    void setTopLabel(const QString &text);
     
 protected:
     enum GraphicLayers {
@@ -74,12 +74,14 @@ protected:
     };
     
     QGraphicsSvgItem *m_background, *m_needle, *m_foreground;
-    QPointF m_pivot;
+    QPointF m_pivot, m_valueLabelCenter;
     double m_angleMin = -90, m_angleMax = 90;
     double m_rangeBandInnerRadius, m_rangeBandOuterRadius;
 
     QGraphicsSvgItem* addItemFromElement(const QString &elementId, 
                                          qreal zValue);
+    QGraphicsSimpleTextItem* addLabelFromElement(const QString &text,
+                                                 const QString &elementId);
     void placeMajorTick(double value);
     double valueToAngle(double value);    
 };

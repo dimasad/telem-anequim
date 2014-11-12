@@ -24,13 +24,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1280"
-     inkscape:window-height="753"
+     inkscape:window-width="1920"
+     inkscape:window-height="1024"
      id="namedview20"
      showgrid="false"
      inkscape:zoom="3.2565963"
-     inkscape:cx="227.17678"
-     inkscape:cy="240.8"
+     inkscape:cx="91.52187"
+     inkscape:cy="117.8901"
      inkscape:window-x="-2"
      inkscape:window-y="-3"
      inkscape:window-maximized="1"
@@ -46,84 +46,47 @@
 </rdf:RDF>
 </metadata>
   <g
-     id="g5">
-    <title
-       id="title7">Layer 1</title>
-    <g
-       id="layer1">
-      <g
-         display="inline"
-         id="background">
-        <rect
-           fill="#453e3e"
-           stroke="#000000"
-           stroke-width="4.198848"
-           stroke-miterlimit="10"
-           stroke-dashoffset="0"
-           rx="21.08169"
-           ry="21.08169"
-           y="2.099393"
-           x="2.099425"
-           height="285.67435"
-           width="299.81647"
-           id="rect2936" />
-        <path
-           fill="#332d2d"
-           stroke="#000000"
-           stroke-width="4"
-           stroke-miterlimit="10"
-           stroke-dashoffset="0"
-           d="m289.388428,144.936554c0,75.873291 -61.507492,137.380737 -137.380768,137.380737c-75.873291,0 -137.380753,-61.507446 -137.380753,-137.380737c0,-75.873291 61.507462,-137.380737 137.380753,-137.380737c75.873306,0 137.380768,61.507446 137.380768,137.380737z"
-           id="path2938" />
-      </g>
-      <path
-         fill="none"
-         stroke="#ffffff"
-         stroke-width="3.161597"
-         stroke-miterlimit="4"
-         id="majorTick"
-         d="m152.007645,9.590027l0,26.504333" />
-      <path
-         fill="none"
-         stroke="#ffffff"
-         stroke-width="1.580798"
-         stroke-miterlimit="4"
-         d="m151.988007,12.45636l0.039307,13.241638"
-         id="minorTick" />
-      <g
-         display="inline"
-         id="needle">
-        <path
-           fill="#000000"
-           stroke="#000000"
-           id="pivot"
-           d="m156.522415,134.784393c5.606918,2.494568 8.129959,9.062119 5.635422,14.668945c-2.494583,5.606949 -9.062149,8.130051 -14.669067,5.635468c-5.606918,-2.494583 -8.129944,-9.06218 -5.635345,-14.669113c2.494537,-5.606842 9.062073,-8.129883 14.668991,-5.6353z" />
-        <path
-           fill="#ffffff"
-           stroke="#000000"
-           stroke-width="2"
-           stroke-linejoin="round"
-           stroke-miterlimit="4"
-           d="m151.934708,31.536255l-4.510986,17.86734l2.111542,85.126465l4.901245,-0.223541l2.15509,-84.646301l-4.656891,-18.123962z"
-           id="path3902" />
-      </g>
-      <path
-         fill="#000000"
-         stroke="#000000"
-         stroke-width="0.944306px"
-         id="path3909"
-         d="m148.911453,116.114868l6.192368,0.026611l-0.674438,19.25769l-4.896805,0.292175l-0.621124,-19.576477z" />
-      <rect
-         fill="none"
-         ry="10"
-         rx="9.999999"
-         y="76.301756"
-         x="84.569367"
-         height="86.428574"
-         width="127.14286"
-         id="foreground" />
-    </g>
+     display="inline"
+     id="background"
+     style="display:inline">
+    <rect
+       stroke-miterlimit="10"
+       rx="21.08169"
+       ry="21.08169"
+       y="2.0993929"
+       x="2.0994251"
+       height="285.67435"
+       width="299.81647"
+       id="rect2936"
+       style="fill:#453e3e;stroke:#000000;stroke-width:4.19884777;stroke-miterlimit:10;stroke-dashoffset:0" />
+    <path
+       stroke-miterlimit="10"
+       d="m 289.38843,144.93655 c 0,75.87329 -61.50749,137.38074 -137.38077,137.38074 -75.873291,0 -137.380753,-61.50745 -137.380753,-137.38074 0,-75.873287 61.507462,-137.380733 137.380753,-137.380733 75.87331,0 137.38077,61.507446 137.38077,137.380733 z"
+       id="path2938"
+       inkscape:connector-curvature="0"
+       style="fill:#332d2d;stroke:#000000;stroke-width:4;stroke-miterlimit:10;stroke-dashoffset:0" />
   </g>
+  <path
+     stroke-miterlimit="4"
+     id="majorTick"
+     d="m 152.00764,9.590027 0,26.504333"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#ffffff;stroke-width:3.16159701;stroke-miterlimit:4" />
+  <path
+     stroke-miterlimit="4"
+     d="m 151.98801,12.45636 0.0393,13.241638"
+     id="minorTick"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#ffffff;stroke-width:1.58079803;stroke-miterlimit:4" />
+  <rect
+     ry="10"
+     rx="9.999999"
+     y="76.301758"
+     x="84.569366"
+     height="86.428574"
+     width="127.14286"
+     id="foreground"
+     style="fill:none" />
   <rect
      style="fill:#800000;stroke:#800000"
      id="rangeBand"
@@ -132,4 +95,46 @@
      x="149.177"
      y="10.066541"
      inkscape:label="#rect2999" />
+  <rect
+     style="fill:#ffff00;fill-opacity:1;stroke:none"
+     id="bottomLabel"
+     width="42.264179"
+     height="23.03018"
+     x="130.87558"
+     y="173.42151" />
+  <rect
+     y="93.421509"
+     x="130.87558"
+     height="23.03018"
+     width="42.264179"
+     id="topLabel"
+     style="fill:#ffff00;fill-opacity:1;stroke:none" />
+  <g
+     display="inline"
+     id="needle"
+     style="display:inline">
+    <path
+       id="pivot"
+       d="m 156.52241,134.78439 c 5.60692,2.49457 8.12996,9.06212 5.63543,14.66895 -2.49459,5.60695 -9.06215,8.13005 -14.66907,5.63547 -5.60692,-2.49459 -8.12994,-9.06218 -5.63535,-14.66912 2.49454,-5.60684 9.06208,-8.12988 14.669,-5.6353 z"
+       inkscape:connector-curvature="0"
+       style="fill:#000000;stroke:#000000" />
+    <path
+       stroke-miterlimit="4"
+       d="m 151.93471,31.536255 -4.51099,17.86734 2.11154,85.126465 4.90125,-0.22354 2.15509,-84.646302 -4.65689,-18.123962 z"
+       id="path3902"
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4" />
+    <path
+       id="path3909"
+       d="m 148.91147,119.11009 6.19237,0.0266 -0.67444,19.25769 -4.8968,0.29217 -0.62113,-19.57647 z"
+       inkscape:connector-curvature="0"
+       style="fill:#000000;stroke:#000000;stroke-width:0.94430602px" />
+  </g>
+  <rect
+     y="203.38788"
+     x="127.49782"
+     height="27.097466"
+     width="49.019699"
+     id="valueLabel"
+     style="fill:#ffff00;fill-opacity:1;stroke:none" />
 </svg>

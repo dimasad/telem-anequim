@@ -18,7 +18,7 @@ typedef enum {
 
 static QPointF bottomCenter(const QRectF &rect);
 static void anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
-                       const QPointF &position);
+                       const QPointF &anchorPoint);
 
 
 SvgGauge::SvgGauge(const QString &svgFile, QWidget *parent) :
@@ -119,25 +119,16 @@ AngularSvgGauge::AngularSvgGauge(const QString &svgFile, QWidget *parent) :
     TickedSvgGauge(svgFile, parent)
 {
     m_pivot = m_renderer.boundsOnElement("pivot").center();
-    auto rangeBandTemplate = m_renderer.boundsOnElement("rangeBand");
-    m_rangeBandInnerRadius = rangeBandTemplate.bottom() - m_pivot.y();
-    m_rangeBandOuterRadius = rangeBandTemplate.top() - m_pivot.y();
+    auto rangeBandRect = m_renderer.boundsOnElement("rangeBand");
+    m_rangeBandInnerRadius = rangeBandRect.bottom() - m_pivot.y();
+    m_rangeBandOuterRadius = rangeBandRect.top() - m_pivot.y();
     
     m_background = addItemFromElement("background", BackgroundLayer);
     m_needle = addItemFromElement("needle", NeedleLayer);
     m_foreground = addItemFromElement("foreground", ForegroundLayer);
-}
-
-
-void
-AngularSvgGauge::addLabel(const QString &text, double x, double y)
-{
-    auto label = new QGraphicsSimpleTextItem(text);
-    label->setBrush(m_textColor);
-    anchorItem(label, AnchorCenter,QPointF (x,y));
-    label->setZValue(InfoLayer);
-    m_textLabels.append(label);
-    scene()->addItem(label);
+    
+    m_valueLabel = addLabelFromElement("", "valueLabel");
+    m_valueLabelCenter = m_renderer.boundsOnElement("valueLabel").center();
 }
 
 
@@ -182,26 +173,25 @@ void
 AngularSvgGauge::setValue(double value)
 {
     m_needle->setRotation(valueToAngle(value));
-    if (m_valueLabel != 0) {
-        QString text = QLocale().toString(value, m_valueLabelFormat, 
-                                          m_valueLabelPrecision);
-        m_valueLabel->setText(text);
+    if (m_valueLabel) {
+        m_valueLabel->setText(QLocale().toString(value, m_valueLabelFormat,
+                                                 m_valueLabelPrecision));
+        anchorItem(m_valueLabel, AnchorCenter, m_valueLabelCenter);
     }
 }
 
 
 void
-AngularSvgGauge::setValueLabelPos(double xPos, double yPos)
+AngularSvgGauge::setBottomLabel(const QString &text)
 {
-    if (m_valueLabel == 0) {
-        m_valueLabel = new QGraphicsSimpleTextItem;
-        m_valueLabel->setBrush(m_textColor);
-        m_valueLabel->setZValue(InfoLayer);
-        m_textLabels.append(m_valueLabel);
-    }
-    
-    m_valueLabel->setPos(xPos, yPos);
-    scene()->addItem(m_valueLabel);
+    addLabelFromElement(text, "bottomLabel");
+}
+
+
+void
+AngularSvgGauge::setTopLabel(const QString &text)
+{
+    addLabelFromElement(text, "topLabel");
 }
 
 
@@ -212,6 +202,29 @@ AngularSvgGauge::addItemFromElement(const QString &elementId, qreal zValue)
     element->setTransformOriginPoint(element->mapFromScene(m_pivot));
     
     return element;
+}
+
+
+QGraphicsSimpleTextItem*
+AngularSvgGauge::addLabelFromElement(const QString &text, 
+                                     const QString &elementId)
+{
+    QRectF labelRect = m_renderer.boundsOnElement(elementId);
+    if (labelRect.isEmpty())
+        return 0;
+    
+    QFont labelFont;
+    labelFont.setPixelSize(labelRect.height());
+    
+    auto label = new QGraphicsSimpleTextItem(text);
+    label->setZValue(InfoLayer);
+    label->setBrush(m_textColor);
+    label->setFont(labelFont);
+    anchorItem(label, AnchorCenter, labelRect.center());
+    scene()->addItem(label);
+    m_textLabels.append(label);
+
+    return label;
 }
 
 
@@ -376,47 +389,46 @@ LinearSvgGauge::moveToPos(QGraphicsItem *item, double pos)
 
 static void
 anchorItem(QGraphicsItem *item, AnchorPoint anchor, 
-           const QPointF &scenePosition)
+           const QPointF &anchorPoint)
 {
-    QPointF mappedPosition = item->mapFromScene(scenePosition);
     QRectF sceneBoundingRect = item->sceneBoundingRect();
-
+    
     switch (anchor) {
     case AnchorTop:
-        item->setX(mappedPosition.x() - sceneBoundingRect.width() / 2);
-        item->setY(mappedPosition.y());
+        item->setX(anchorPoint.x() - sceneBoundingRect.width() / 2);
+        item->setY(anchorPoint.y());
         break;
     case AnchorBottom:
-        item->setX(mappedPosition.x() - sceneBoundingRect.width() / 2);
-        item->setY(mappedPosition.y() - sceneBoundingRect.height());
+        item->setX(anchorPoint.x() - sceneBoundingRect.width() / 2);
+        item->setY(anchorPoint.y() - sceneBoundingRect.height());
         break;
     case AnchorLeft:
-        item->setX(mappedPosition.x());
-        item->setY(mappedPosition.y() - sceneBoundingRect.height() / 2);
+        item->setX(anchorPoint.x());
+        item->setY(anchorPoint.y() - sceneBoundingRect.height() / 2);
         break;
     case AnchorRight:
-        item->setX(mappedPosition.x() - sceneBoundingRect.width());
-        item->setY(mappedPosition.y() - sceneBoundingRect.height() / 2);
+        item->setX(anchorPoint.x() - sceneBoundingRect.width());
+        item->setY(anchorPoint.y() - sceneBoundingRect.height() / 2);
         break;
     case AnchorTopLeft:
-        item->setX(mappedPosition.x());
-        item->setY(mappedPosition.y());
+        item->setX(anchorPoint.x());
+        item->setY(anchorPoint.y());
         break;
     case AnchorTopRight:
-        item->setX(mappedPosition.x() - sceneBoundingRect.width());
-        item->setY(mappedPosition.y());
+        item->setX(anchorPoint.x() - sceneBoundingRect.width());
+        item->setY(anchorPoint.y());
         break;
     case AnchorBottomLeft:
-        item->setX(mappedPosition.x());
-        item->setY(mappedPosition.y() - sceneBoundingRect.height());
+        item->setX(anchorPoint.x());
+        item->setY(anchorPoint.y() - sceneBoundingRect.height());
         break;
     case AnchorBottomRight:
-        item->setX(mappedPosition.x() - sceneBoundingRect.width());
-        item->setY(mappedPosition.y() - sceneBoundingRect.height());
+        item->setX(anchorPoint.x() - sceneBoundingRect.width());
+        item->setY(anchorPoint.y() - sceneBoundingRect.height());
         break;
     case AnchorCenter:
-        item->setX(mappedPosition.x() - sceneBoundingRect.width()/2);
-        item->setY(mappedPosition.y() - sceneBoundingRect.height()/2);
+        item->setX(anchorPoint.x() - sceneBoundingRect.width() / 2);
+        item->setY(anchorPoint.y() - sceneBoundingRect.height() / 2);
         break;
     }
 }

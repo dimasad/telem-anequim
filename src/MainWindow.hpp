@@ -104,6 +104,7 @@ public slots:
     void emsOnline();
     void emsOffline();
     void showSettingsDialog();
+    void updateLogFolder(const QString &logFolder);
 
 private:
     Settings m_settings;

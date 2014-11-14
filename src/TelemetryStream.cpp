@@ -39,7 +39,7 @@ void
 TelemetryStream::startLogging(const QString &logFileName)
 {
     m_logFile = new QFile(logFileName, this);
-    m_logFile->open(QIODevice::ReadOnly | QIODevice::Text);
+    m_logFile->open(QIODevice::WriteOnly | QIODevice::Text);
     
     auto variableNames = m_logVariables.keys();
     auto comp = [&](const QString &a, const QString &b){

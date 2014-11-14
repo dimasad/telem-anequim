@@ -2,6 +2,7 @@
 
 #include <QtGui>
 #include <QAction>
+#include <QDateTime>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -149,7 +150,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     m_efisStream = new EfisStream(m_settings.efisPort(), this);
     m_emsStream = new EmsStream(m_settings.emsPort(), this);
-    
+
+    updateLogFolder(m_settings.logFolder());
+    connect(&m_settings, SIGNAL(logFolderChanged(const QString &)), 
+            this, SLOT(updateLogFolder(const QString &)));
+
     connect(&m_settings, SIGNAL(efisPortChanged(const QString &)),
             m_efisStream, SLOT(setPort(const QString &)));
     connect(&m_settings, SIGNAL(emsPortChanged(const QString &)),
@@ -521,4 +526,14 @@ MainWindow::showSettingsDialog()
 {
     SettingsDialog settingsDialog(&m_settings);
     settingsDialog.exec();
+}
+
+void
+MainWindow::updateLogFolder(const QString &logFolder)
+{
+    auto now = QDateTime::currentDateTime();
+    QString dateStr = now.toString("yyyy-MM-dd_HH'h'mm'm'");
+    
+    m_efisStream->startLogging(logFolder + "/efis_" + dateStr + ".log");
+    m_emsStream->startLogging(logFolder + "/ems_" + dateStr + ".log");
 }
